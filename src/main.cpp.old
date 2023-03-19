@@ -1,0 +1,421 @@
+
+// Example sketch which shows how to display some patterns
+// on a 64x32 LED matrix
+//
+
+#include "HWCDC.h"
+#include <SPIFFS.h>
+#include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
+#include <AnimatedGIF.h>
+
+#define FILESYSTEM SPIFFS
+
+#define PANEL_RES_X 64      // Number of pixels wide of each INDIVIDUAL panel module. 
+#define PANEL_RES_Y 64     // Number of pixels tall of each INDIVIDUAL panel module.
+#define PANEL_CHAIN 1      // Total number of panels chained one to another
+ 
+#define R1_PIN 4
+#define G1_PIN 5
+#define B1_PIN 6
+#define R2_PIN 7
+#define G2_PIN 15
+#define B2_PIN 16
+#define A_PIN  18
+#define B_PIN  8
+#define C_PIN  3
+#define D_PIN  42
+#define E_PIN  39 // required for 1/32 scan panels, like 64x64. Any available pin would do, i.e. IO32
+#define LAT_PIN 40
+#define OE_PIN  2
+#define CLK_PIN 41
+
+// #define R1_PIN 17
+// #define G1_PIN 14
+// #define B1_PIN 18
+// #define R2_PIN 12
+// #define G2_PIN 5
+// #define B2_PIN 6
+// #define A_PIN 11
+// #define B_PIN 10
+// #define C_PIN 7
+// #define D_PIN 3
+// #define E_PIN 1 // required for 1/32 scan panels, like 64x64px. Any available pin would do, i.e. IO32
+// #define LAT_PIN 24
+// #define OE_PIN 37
+// #define CLK_PIN 36
+
+//MatrixPanel_I2S_DMA dma_display;
+MatrixPanel_I2S_DMA *dma_display = nullptr;
+
+// uint16_t myBLACK = dma_display->color565(0, 0, 0);
+// uint16_t myWHITE = dma_display->color565(255, 255, 255);
+// uint16_t myRED = dma_display->color565(255, 0, 0);
+// uint16_t myGREEN = dma_display->color565(0, 255, 0);
+// uint16_t myBLUE = dma_display->color565(0, 0, 255);
+
+
+AnimatedGIF gif;
+File f;
+int x_offset, y_offset;
+
+
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+// From: https://gist.github.com/davidegironi/3144efdc6d67e5df55438cc3cba613c8
+uint16_t colorWheel(uint8_t pos) {
+  if(pos < 85) {
+    return dma_display->color565(pos * 3, 255 - pos * 3, 0);
+  } else if(pos < 170) {
+    pos -= 85;
+    return dma_display->color565(255 - pos * 3, 0, pos * 3);
+  } else {
+    pos -= 170;
+    return dma_display->color565(0, pos * 3, 255 - pos * 3);
+  }
+}
+
+void drawText(int colorWheelOffset)
+{
+  
+  // draw text with a rotating colour
+  dma_display->setTextSize(1);     // size 1 == 8 pixels high
+  dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
+
+  dma_display->setCursor(5, 0);    // start at top left, with 8 pixel of spacing
+  uint8_t w = 0;
+  const char *str = "ESP32 DMA";
+  for (w=0; w<strlen(str); w++) {
+    dma_display->setTextColor(colorWheel((w*32)+colorWheelOffset));
+    dma_display->print(str[w]);
+  }
+
+  dma_display->println();
+  dma_display->print(" ");
+  for (w=9; w<18; w++) {
+    dma_display->setTextColor(colorWheel((w*32)+colorWheelOffset));
+    dma_display->print("*");
+  }
+  
+  dma_display->println();
+
+  dma_display->setTextColor(dma_display->color444(15,15,15));
+  dma_display->println("LED MATRIX!");
+
+  // print each letter with a fixed rainbow color
+  dma_display->setTextColor(dma_display->color444(0,8,15));
+  dma_display->print('3');
+  dma_display->setTextColor(dma_display->color444(15,4,0));
+  dma_display->print('2');
+  dma_display->setTextColor(dma_display->color444(15,15,0));
+  dma_display->print('x');
+  dma_display->setTextColor(dma_display->color444(8,15,0));
+  dma_display->print('6');
+  dma_display->setTextColor(dma_display->color444(8,0,15));
+  dma_display->print('4');
+
+  // Jump a half character
+  dma_display->setCursor(34, 24);
+  dma_display->setTextColor(dma_display->color444(0,15,15));
+  dma_display->print("*");
+  dma_display->setTextColor(dma_display->color444(15,0,0));
+  dma_display->print('R');
+  dma_display->setTextColor(dma_display->color444(0,15,0));
+  dma_display->print('G');
+  dma_display->setTextColor(dma_display->color444(0,0,15));
+  dma_display->print("B");
+  dma_display->setTextColor(dma_display->color444(15,0,8));
+  dma_display->println("*");
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Draw a line of image directly on the LED Matrix
+void GIFDraw(GIFDRAW *pDraw)
+{
+    uint8_t *s;
+    uint16_t *d, *usPalette, usTemp[320];
+    int x, y, iWidth;
+
+  iWidth = pDraw->iWidth;
+  if (iWidth > MATRIX_WIDTH)
+      iWidth = MATRIX_WIDTH;
+
+    usPalette = pDraw->pPalette;
+    y = pDraw->iY + pDraw->y; // current line
+    
+    s = pDraw->pPixels;
+    if (pDraw->ucDisposalMethod == 2) // restore to background color
+    {
+      for (x=0; x<iWidth; x++)
+      {
+        if (s[x] == pDraw->ucTransparent)
+           s[x] = pDraw->ucBackground;
+      }
+      pDraw->ucHasTransparency = 0;
+    }
+    // Apply the new pixels to the main image
+    if (pDraw->ucHasTransparency) // if transparency used
+    {
+      uint8_t *pEnd, c, ucTransparent = pDraw->ucTransparent;
+      int x, iCount;
+      pEnd = s + pDraw->iWidth;
+      x = 0;
+      iCount = 0; // count non-transparent pixels
+      while(x < pDraw->iWidth)
+      {
+        c = ucTransparent-1;
+        d = usTemp;
+        while (c != ucTransparent && s < pEnd)
+        {
+          c = *s++;
+          if (c == ucTransparent) // done, stop
+          {
+            s--; // back up to treat it like transparent
+          }
+          else // opaque
+          {
+             *d++ = usPalette[c];
+             iCount++;
+          }
+        } // while looking for opaque pixels
+        if (iCount) // any opaque pixels?
+        {
+          for(int xOffset = 0; xOffset < iCount; xOffset++ ){
+            dma_display->drawPixel(x + xOffset, y, usTemp[xOffset]); // 565 Color Format
+          }
+          x += iCount;
+          iCount = 0;
+        }
+        // no, look for a run of transparent pixels
+        c = ucTransparent;
+        while (c == ucTransparent && s < pEnd)
+        {
+          c = *s++;
+          if (c == ucTransparent)
+             iCount++;
+          else
+             s--; 
+        }
+        if (iCount)
+        {
+          x += iCount; // skip these
+          iCount = 0;
+        }
+      }
+    }
+    else // does not have transparency
+    {
+      s = pDraw->pPixels;
+      // Translate the 8-bit pixels through the RGB565 palette (already byte reversed)
+      for (x=0; x<pDraw->iWidth; x++)
+      {
+        dma_display->drawPixel(x, y, usPalette[*s++]); // color 565
+      }
+    }
+} /* GIFDraw() */
+
+
+void * GIFOpenFile(const char *fname, int32_t *pSize)
+{
+  Serial.print("Playing gif: ");
+  Serial.println(fname);
+  f = FILESYSTEM.open(fname);
+  if (f)
+  {
+    *pSize = f.size();
+    return (void *)&f;
+  }
+  return NULL;
+} /* GIFOpenFile() */
+
+void GIFCloseFile(void *pHandle)
+{
+  File *f = static_cast<File *>(pHandle);
+  if (f != NULL)
+     f->close();
+} /* GIFCloseFile() */
+
+int32_t GIFReadFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen)
+{
+    int32_t iBytesRead;
+    iBytesRead = iLen;
+    File *f = static_cast<File *>(pFile->fHandle);
+    // Note: If you read a file all the way to the last byte, seek() stops working
+    if ((pFile->iSize - pFile->iPos) < iLen)
+       iBytesRead = pFile->iSize - pFile->iPos - 1; // <-- ugly work-around
+    if (iBytesRead <= 0)
+       return 0;
+    iBytesRead = (int32_t)f->read(pBuf, iBytesRead);
+    pFile->iPos = f->position();
+    return iBytesRead;
+} /* GIFReadFile() */
+
+int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
+{ 
+  int i = micros();
+  File *f = static_cast<File *>(pFile->fHandle);
+  f->seek(iPosition);
+  pFile->iPos = (int32_t)f->position();
+  i = micros() - i;
+//  Serial.printf("Seek time = %d us\n", i);
+  return pFile->iPos;
+} /* GIFSeekFile() */
+
+unsigned long start_tick = 0;
+
+void ShowGIF(char *name)
+{
+  start_tick = millis();
+   
+  if (gif.open(name, GIFOpenFile, GIFCloseFile, GIFReadFile, GIFSeekFile, GIFDraw))
+  {
+    x_offset = (MATRIX_WIDTH - gif.getCanvasWidth())/2;
+    if (x_offset < 0) x_offset = 0;
+    y_offset = (MATRIX_HEIGHT - gif.getCanvasHeight())/2;
+    if (y_offset < 0) y_offset = 0;
+    Serial.printf("Successfully opened GIF; Canvas size = %d x %d\n", gif.getCanvasWidth(), gif.getCanvasHeight());
+    Serial.flush();
+    while(1)
+    {
+      while (gif.playFrame(true, NULL))
+      {      
+        // if ( (millis() - start_tick) > 8000) { // we'll get bored after about 8 seconds of the same looping gif
+        //   break;
+        // }
+      } 
+      gif.reset();
+    }
+    gif.close();
+  }
+
+} /* ShowGIF() */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void setup() {
+
+  Serial.begin(115200);
+  USBSerial.begin(115200);
+
+  USBSerial.println("hello :)");
+  pinMode(13, OUTPUT);
+
+  // Module configuration
+  HUB75_I2S_CFG::i2s_pins panel_pins = {R1_PIN, G1_PIN, B1_PIN, R2_PIN, G2_PIN, B2_PIN, A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, LAT_PIN, OE_PIN, CLK_PIN};
+  HUB75_I2S_CFG mxconfig(
+    PANEL_RES_X,   // module width
+    PANEL_RES_Y,   // module height
+    PANEL_CHAIN,   // Chain length
+    panel_pins     // pins
+  );
+
+  //mxconfig.gpio.e = 18;
+  //mxconfig.clkphase = false;
+  //mxconfig.driver = HUB75_I2S_CFG::FM6126A;
+
+  // Display Setup
+  dma_display = new MatrixPanel_I2S_DMA(mxconfig);
+  dma_display->begin();
+  dma_display->setBrightness8(90); //0-255
+  dma_display->clearScreen();
+  dma_display->fillScreen(dma_display->color565(255, 255, 255));
+  
+  // fix the screen with green
+  dma_display->fillRect(0, 0, dma_display->width(), dma_display->height(), dma_display->color444(0, 15, 0));
+  delay(500);
+
+  // draw a box in yellow
+  dma_display->drawRect(0, 0, dma_display->width(), dma_display->height(), dma_display->color444(15, 15, 0));
+  delay(500);
+
+  // draw an 'X' in red
+  dma_display->drawLine(0, 0, dma_display->width()-1, dma_display->height()-1, dma_display->color444(15, 0, 0));
+  dma_display->drawLine(dma_display->width()-1, 0, 0, dma_display->height()-1, dma_display->color444(15, 0, 0));
+  delay(500);
+
+  // draw a blue circle
+  dma_display->drawCircle(10, 10, 10, dma_display->color444(0, 0, 15));
+  delay(500);
+
+  // fill a violet circle
+  dma_display->fillCircle(40, 21, 10, dma_display->color444(15, 0, 15));
+  delay(500);
+
+  // fill the screen with 'black'
+  dma_display->fillScreen(dma_display->color444(0, 0, 0));
+
+  //drawText(0);
+
+
+  // Start filesystem
+  Serial.println(" * Loading SPIFFS");
+  if(!SPIFFS.begin()){
+        Serial.println("SPIFFS Mount Failed");
+  }
+
+  dma_display->fillScreen(dma_display->color565(0, 0, 0));
+  gif.begin(LITTLE_ENDIAN_PIXELS);
+
+}
+
+uint8_t wheelval = 0;
+bool led = false;
+
+String gifDir = "/"; // play all GIFs in this directory on the SD card
+char filePath[256] = { 0 };
+File root, gifFile;
+
+void loop() {
+
+
+    root = FILESYSTEM.open(gifDir);
+    if (root)
+    {
+          gifFile = root.openNextFile();
+          if (!gifFile.isDirectory()) // play it
+          {
+            
+            // C-strings... urghh...                
+            memset(filePath, 0x0, sizeof(filePath));                
+            strcpy(filePath, gifFile.path());
+            
+            // Show it.
+            ShowGIF(filePath);
+            
+          }
+        root.close();
+
+      
+   } // while
+
+}
