@@ -44,4 +44,9 @@ void ScreenTestB::finish()
     logi(LOG_TAG, "Finish!!!");
 }
 
+void ScreenTestB::setting_update(const char* setting, const char *new_setting)
+{
+    
+}
+
 #endif /* INCLUDE_TEST_SCREENS */

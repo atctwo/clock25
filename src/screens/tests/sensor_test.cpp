@@ -54,4 +54,9 @@ void SensorTest::finish()
     logi(LOG_TAG, "Finish!!!");
 }
 
+void SensorTest::setting_update(const char* setting, const char *new_setting)
+{
+    
+}
+
 #endif /* INCLUDE_TEST_SCREENS */

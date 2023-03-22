@@ -4,6 +4,7 @@
 #include "brightness.h"
 #include "sensors.h"
 #include "rtc.h"
+#include "settings.h"
 #include "sd.h"
 #include "screens/screens.h"
 #include "log.h"
@@ -34,6 +35,11 @@ void setup()
     setup_sensors();
     setup_rtc();
     setup_sd();
+
+    // setup screen subsystem and settings
+    setup_screens();
+    // TODO: add system settings
+    // TODO: load settings from sd card
     switch_screen(0);
 
     display->setBrightness(255);
@@ -42,6 +48,7 @@ void setup()
 
 uint32_t last_switch_time = 0;
 uint32_t last_brightness_time = 0;
+uint32_t last_random_time = 0;
 int next_screen = 0;
 
 void loop()
@@ -49,7 +56,7 @@ void loop()
     update_screen(display);
 
     // cycle screens
-    if (1)
+    if (0)
     {
         if (millis() - last_switch_time > 5000)
         {
@@ -71,4 +78,12 @@ void loop()
 
         } else display->setBrightness(128);
     }
+
+    // randomise rainbow speed
+    // if (millis() - last_random_time > 2500)
+    // {
+    //     uint16_t new_speed = 1 + rand() % 1000;
+    //     set_setting("Digital Clock", "Rainbow Speed", std::to_string(new_speed).c_str());
+    //     last_random_time = millis();
+    // }
 }

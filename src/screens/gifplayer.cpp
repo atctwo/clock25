@@ -273,3 +273,8 @@ void GIFPlayer::finish()
     // destroy gif
     delete gif;
 }
+
+void GIFPlayer::setting_update(const char* setting, const char *new_setting)
+{
+  
+}

@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "settings.h"
 #include "pins.h"
 #include "log.h"
 
@@ -19,8 +20,13 @@ std::vector<ScreenInfo> screens = {
     // {"SD Test", make<SDTest>},
 #endif
 
-    {"Digital Clock", make<ClockDigital>, true},
-    {"GIF Player", make<GIFPlayer>, false}
+    {"Digital Clock", make<ClockDigital>, {
+        {"Rainbow Speed", "15"}
+    }, true},
+
+    {"GIF Player", make<GIFPlayer>, {
+        {"GIF File", "0"}
+    }, false}
 
 };
 
@@ -35,6 +41,26 @@ ScreenBase *current_screen = NULL;       // reference to object for the currentl
 int current_screen_id = -1;              // id of the current screen's class creator in the `screens` vector
 // int next_screen_id = -1;                 // internal flag + id for which screen to switch to
 GFXcanvas16 canvas(PANEL_RES_X, PANEL_RES_Y);
+
+void setup_screens()
+{
+    logi(LOG_TAG, "registering screen settings");
+
+    // for each screen
+    for (ScreenInfo screen : screens)
+    {
+        // for each setting
+        for (ScreenSettings setting : screen.settings)
+        {
+            // set setting to default
+            // this registers the setting so the system knows about it
+            // the value saved on the sd card will be loaded later
+            set_setting(screen.name, setting.name, setting.default_value);
+        }
+    }
+
+    logi(LOG_TAG, "setup screens!");
+}
 
 void switch_screen(int new_screen_id)
 {
@@ -102,4 +128,9 @@ void update_screen(Adafruit_GFX *display)
 
         
     }
+}
+
+const char *current_screen_name()
+{
+    return current_screen ? screens[current_screen_id].name : "No screen loaded";
 }

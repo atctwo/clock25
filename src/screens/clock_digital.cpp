@@ -1,7 +1,10 @@
 #include "sensors.h"
 #include "rtc.h"
+#include "settings.h"
 #include "screens.h"
 #include "log.h"
+
+#include <string>
 
 #include "../fonts/open_sans_7.h"
 #include "../fonts/open_sans_10.h"
@@ -109,6 +112,9 @@ void ClockDigital::setup(Adafruit_GFX *display)
 {
     this->display = display;
     canvas_time = new GFXcanvas1(PANEL_RES_X, 20);
+
+    // get settings
+    this->rainbow_speed = std::stoi(get_setting(nullptr, "Rainbow Speed", "15"));
 }
 
 uint32_t last_time_update = 0;
@@ -131,7 +137,7 @@ void ClockDigital::loop()
                 now.hour(),
                 now.minute()+5 // TODO: stop adding an extra 5 mins
             );
-            drawRainbowBitmap(display, 0, 4, canvas_time->getBuffer(), PANEL_RES_X, 20, 0, ((millis() % 60000) * 15)/1000);
+            drawRainbowBitmap(display, 0, 4, canvas_time->getBuffer(), PANEL_RES_X, 20, 0, ((millis() % 60000) * this->rainbow_speed)/1000);
 
             // print date
             display->setFont(&VarelaRound_Regular7pt7b);
@@ -159,7 +165,7 @@ void ClockDigital::loop()
         else 
         {
             display->setCursor(0xffff, 0);
-            display->println("rtc not\navailable");
+            display->println(" RTC not\n Available");
         }
 
     // }
@@ -170,4 +176,12 @@ void ClockDigital::loop()
 void ClockDigital::finish()
 {
     delete canvas_time;
+}
+
+void ClockDigital::setting_update(const char* setting, const char *new_setting)
+{
+    // update rainbow speed
+    if (strcmp(setting, "Rainbow Speed") == 0) {
+        this->rainbow_speed = std::stoi(new_setting);
+    }
 }
