@@ -102,6 +102,7 @@ class GIFPlayer: public ScreenBase {
         void setting_update(const char* setting, const char *new_setting);
     private:
         Adafruit_GFX *display;
+        const char *current_gif_path;
 };
 
 

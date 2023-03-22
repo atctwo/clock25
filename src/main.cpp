@@ -40,7 +40,7 @@ void setup()
     setup_screens();
     // TODO: add system settings
     // TODO: load settings from sd card
-    switch_screen(0);
+    switch_screen(1);
 
     display->setBrightness(255);
 }
@@ -86,4 +86,30 @@ void loop()
     //     set_setting("Digital Clock", "Rainbow Speed", std::to_string(new_speed).c_str());
     //     last_random_time = millis();
     // }
+
+    // change gif
+    if (millis() - last_random_time > 2500)
+    {
+        uint16_t new_gif = rand() % 5;
+
+        switch(new_gif) {
+            case 0:
+                set_setting("GIF Player", "GIF File", "/gifs/amogus64.gif");
+                break;
+            case 1:
+                set_setting("GIF Player", "GIF File", "/gifs/dipp.gif");
+                break;
+            case 2:
+                set_setting("GIF Player", "GIF File", "/gifs/kirby.gif");
+                break;
+            case 3:
+                set_setting("GIF Player", "GIF File", "/gifs/puppycat.gif");
+                break;
+            case 4:
+                set_setting("GIF Player", "GIF File", "/gifs/squid.gif");
+                break;
+        }
+
+        last_random_time = millis();
+    }
 }

@@ -1,5 +1,6 @@
 #include "pins.h"
 #include "sd.h"
+#include "settings.h"
 #include "screens.h"
 #include "log.h"
 
@@ -20,8 +21,10 @@ File root, gifFile;
 bool has_root_been_opened = false;
 unsigned long start_tick = 0;
 
-bool cycle_gifs = true;
-const char *default_gif = "/gifs/amogus64.gif";
+bool cycle_gifs = false;
+// const char *default_gif = "/gifs/amogus64.gif";
+
+const char *next_gif = nullptr;
 
 
 // Draw a line of image directly on the LED Matrix
@@ -167,13 +170,23 @@ int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
 } /* GIFSeekFile() */
 
 
-void GIFPlayer::setup(Adafruit_GFX *display)
+
+void load_gif_from_file(const char *default_gif)
 {
-    this->display = display;
-    dma_display = display; // HACK
 
     if (sd_available())
     {
+
+        // close gif if already open
+        if (is_gif_open) {
+
+            // close gif
+            gif->close();
+
+            // delete gif
+            delete gif;
+        }
+
 
         gif = new AnimatedGIF();
         gif->begin(LITTLE_ENDIAN_PIXELS);
@@ -227,6 +240,21 @@ void GIFPlayer::setup(Adafruit_GFX *display)
     }
 }
 
+
+
+
+void GIFPlayer::setup(Adafruit_GFX *display)
+{
+    this->display = display;
+    dma_display = display; // HACK
+
+    // load settings
+    this->current_gif_path = get_setting(nullptr, "GIF File", "/gifs/amogus64.gif").c_str();
+
+    // load gif
+    load_gif_from_file(this->current_gif_path);
+}
+
 void GIFPlayer::loop()
 {
     if (!sd_available())
@@ -248,7 +276,20 @@ void GIFPlayer::loop()
             bool not_finished = gif->playFrame(true, NULL);
 
             // go back to the start of the gif
-            if (!not_finished) gif->reset();
+            if (!not_finished) {
+
+                // reset the gif (back to the start)
+                gif->reset();
+
+                // check if there is a new gif to load
+                if (next_gif != nullptr) {
+
+                    // load next gif
+                    this->current_gif_path = next_gif;
+                    load_gif_from_file(next_gif);
+
+                }
+            }
         }
         else {
 
@@ -258,7 +299,7 @@ void GIFPlayer::loop()
             this->display->printf("GIF Player\n");
 
             display->setTextColor(0xffff, 0);
-            display->printf("Failed to\nload GIF\n\n%s", gifFile.name());
+            display->printf("Failed to\nload GIF\n\n%s", this->current_gif_path);
 
         }
 
@@ -276,5 +317,19 @@ void GIFPlayer::finish()
 
 void GIFPlayer::setting_update(const char* setting, const char *new_setting)
 {
-  
+    // if setting is gif file
+    if (strcmp(setting, "GIF File") == 0) {
+
+        // // if there isn't a gif already open
+        // if (!is_gif_open) {
+        //     // load the gif
+        //     this->current_gif_path = new_setting;
+        //     load_gif_from_file(new_setting);
+        // } 
+        // // otherwise, save the gif file path to be loaded later
+        // else next_gif = new_setting;
+
+        this->current_gif_path = new_setting;
+        load_gif_from_file(new_setting);
+    }
 }
