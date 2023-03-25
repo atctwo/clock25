@@ -9,6 +9,10 @@
 #define FILESYSTEM SD
 // #define FILESYSTEM SPIFFS
 
+// buffer size for ArduinoJson
+#define JSON_BUFFER_SIZE 2048
+#define SETTINGS_FILE "/settings.json"
+
 // I2C pins
 #define SDA_PIN 12
 #define SCL_PIN 11

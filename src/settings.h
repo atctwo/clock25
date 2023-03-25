@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <FS.h>
+#include <ArduinoJson.h>
+#include "pins.h"
 
 /**
  * Write the value of a setting.  If the setting doesn't already exist, it will be created.
@@ -29,6 +32,33 @@ void remove_setting_callback(int callback_id);
  * Returns a list of the names of each setting for a given screen
 */
 std::vector<const char*> get_settings(const char *screen_name);
+
+/**
+ * Writes every setting into a JSON document
+ * @param doc an existing JSON document to write settings to
+*/
+void serialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc);
+
+/**
+ * Reads a JSON file and loads it's contents into the settings subsystem
+*/
+void deserialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc);
+
+/**
+ * Loads settings from a JSON file on a file system
+ * @param fs the file system to load from
+ * @param filename the name of the settings json file
+*/
+void load_settings(FS &fs, const char *filename=SETTINGS_FILE);
+
+/**
+ * Stores settings to a JSON file on a file system
+ * @param fs the file system to store to
+ * @param filename the name of the settings json file
+*/
+void store_settings(FS &fs, const char *filename=SETTINGS_FILE);
+
+
 
 
 #endif /* CLOCK_SETTINGS_H */

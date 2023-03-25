@@ -52,9 +52,12 @@ void setup()
     register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
     set_setting("<system>", "City", "2655984"); // Belfast, Northern Ireland
     set_setting("<system>", "NTP Update Frequency", "86400000"); // 24 hours in milliseconds
-    // TODO: load settings from sd card
-    switch_screen(0);
 
+    // load settings from sd card
+    load_settings(SD);
+    
+    // start!
+    switch_screen(0);
     display->setBrightness(255);
 }
 
