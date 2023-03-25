@@ -12,6 +12,16 @@
 
 #define LOG_TAG "main"
 
+uint32_t last_switch_time = 0;
+uint32_t last_brightness_time = 0;
+uint32_t last_random_time = 0;
+int next_screen = 0;
+int cycle_screens = 0;
+
+void set_cycle_screens(const char *new_value) {
+    cycle_screens = std::stoi(new_value);
+}
+
 void setup()
 {
     delay(1000);
@@ -38,25 +48,22 @@ void setup()
 
     // setup screen subsystem and settings
     setup_screens();
-    // TODO: add system settings
+    set_setting("<system>", "Cycle Screens", "0");
+    register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
+    set_setting("<system>", "City", "2655984"); // Belfast, Northern Ireland
+    set_setting("<system>", "NTP Update Frequency", "86400000"); // 24 hours in milliseconds
     // TODO: load settings from sd card
     switch_screen(0);
 
     display->setBrightness(255);
 }
 
-
-uint32_t last_switch_time = 0;
-uint32_t last_brightness_time = 0;
-uint32_t last_random_time = 0;
-int next_screen = 0;
-
 void loop()
 {
     update_screen(display);
 
     // cycle screens
-    if (0)
+    if (cycle_screens)
     {
         if (millis() - last_switch_time > 5000)
         {
@@ -88,28 +95,28 @@ void loop()
     // }
 
     // change gif
-    if (millis() - last_random_time > 2500)
-    {
-        uint16_t new_gif = rand() % 5;
+    // if (millis() - last_random_time > 2500)
+    // {
+    //     uint16_t new_gif = rand() % 5;
 
-        switch(new_gif) {
-            case 0:
-                set_setting("GIF Player", "GIF File", "/gifs/amogus64.gif");
-                break;
-            case 1:
-                set_setting("GIF Player", "GIF File", "/gifs/dipp.gif");
-                break;
-            case 2:
-                set_setting("GIF Player", "GIF File", "/gifs/kirby.gif");
-                break;
-            case 3:
-                set_setting("GIF Player", "GIF File", "/gifs/puppycat.gif");
-                break;
-            case 4:
-                set_setting("GIF Player", "GIF File", "/gifs/squid.gif");
-                break;
-        }
+    //     switch(new_gif) {
+    //         case 0:
+    //             set_setting("GIF Player", "GIF File", "/gifs/amogus64.gif");
+    //             break;
+    //         case 1:
+    //             set_setting("GIF Player", "GIF File", "/gifs/dipp.gif");
+    //             break;
+    //         case 2:
+    //             set_setting("GIF Player", "GIF File", "/gifs/kirby.gif");
+    //             break;
+    //         case 3:
+    //             set_setting("GIF Player", "GIF File", "/gifs/puppycat.gif");
+    //             break;
+    //         case 4:
+    //             set_setting("GIF Player", "GIF File", "/gifs/squid.gif");
+    //             break;
+    //     }
 
-        last_random_time = millis();
-    }
+    //     last_random_time = millis();
+    // }
 }
