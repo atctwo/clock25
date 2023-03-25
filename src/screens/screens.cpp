@@ -13,11 +13,11 @@
 std::vector<ScreenInfo> screens = {
 
 #ifdef INCLUDE_TEST_SCREENS
-    // {"TestScreen", make<ScreenTest>},
-    // {"Test B", make<ScreenTestB>},
-    // {"Brightness", make<BrightnessTest>},
-    // {"Sensors", make<SensorTest>},
-    // {"SD Test", make<SDTest>},
+    {"TestScreen", make<ScreenTest>, {}, true},
+    {"Test B", make<ScreenTestB>, {}, true},
+    {"Brightness", make<BrightnessTest>, {}, true},
+    {"Sensors", make<SensorTest>, {}, true},
+    {"SD Test", make<SDTest>, {}, true},
 #endif
 
     {"Digital Clock", make<ClockDigital>, {

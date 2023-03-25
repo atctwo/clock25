@@ -40,7 +40,7 @@ void setup()
     setup_screens();
     // TODO: add system settings
     // TODO: load settings from sd card
-    switch_screen(1);
+    switch_screen(0);
 
     display->setBrightness(255);
 }

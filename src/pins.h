@@ -3,7 +3,7 @@
 
 
 // whether to include test screens
-#define INCLUDE_TEST_SCREENS
+// #define INCLUDE_TEST_SCREENS
 
 // which filesystem to use
 #define FILESYSTEM SD
