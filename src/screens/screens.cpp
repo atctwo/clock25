@@ -25,7 +25,7 @@ std::vector<ScreenInfo> screens = {
     }, true},
 
     {"GIF Player", make<GIFPlayer>, {
-        {"GIF File", "0"}
+        {"GIF File", "/gifs/katamari.gif"}
     }, false}
 
 };

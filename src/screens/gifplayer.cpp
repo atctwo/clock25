@@ -171,9 +171,9 @@ int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
 
 
 
-void load_gif_from_file(const char *default_gif)
+void load_gif_from_file(std::string default_gif)
 {
-
+    logi(LOG_TAG, "eeeeeeee %x", default_gif);
     if (sd_available())
     {
 
@@ -193,7 +193,8 @@ void load_gif_from_file(const char *default_gif)
 
         start_tick = millis();
 
-        char gif_path[200] = "/gifs/";
+        // char gif_path[200] = "";
+        const char *gif_path = default_gif.c_str();
 
         if (!has_root_been_opened) {
             File root = FILESYSTEM.open("/gifs");
@@ -210,12 +211,13 @@ void load_gif_from_file(const char *default_gif)
                 gifFile = root.openNextFile();
             }
 
-            strcat(gif_path, gifFile.name());
+            // strcat(gif_path, "/gifs/");
+            // strcat(gif_path, gifFile.name());
         }
         else
         {
             // if cycle is disabled, copy the default gif path
-            strcpy(gif_path, default_gif);
+            // strcpy(gif_path, default_gif);
         }
 
         logi(LOG_TAG, "opening gif %s", gif_path);
@@ -299,6 +301,7 @@ void GIFPlayer::loop()
             this->display->printf("GIF Player\n");
 
             display->setTextColor(0xffff, 0);
+            // logi(LOG_TAG, "eeeeeeee %s", this->current_gif_path);
             display->printf("Failed to\nload GIF\n\n%s", this->current_gif_path);
 
         }
