@@ -165,7 +165,7 @@ void ClockDigital::loop()
         else 
         {
             display->setCursor(0xffff, 0);
-            display->println(" RTC not\n Available");
+            display->println("\n\n\n RTC not\n Available");
         }
 
     // }
