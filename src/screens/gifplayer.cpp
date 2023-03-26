@@ -185,6 +185,8 @@ void load_gif_from_file(std::string default_gif)
 
             // delete gif
             delete gif;
+
+            is_gif_open = false;
         }
 
 
@@ -237,6 +239,7 @@ void load_gif_from_file(std::string default_gif)
         {
             is_gif_open = false;
             loge(LOG_TAG, "failed to open gif %s", gif_path);
+            delete gif;
         }
 
     }
@@ -254,6 +257,7 @@ void GIFPlayer::setup(Adafruit_GFX *display)
     this->current_gif_path = get_setting(nullptr, "GIF File", "/gifs/amogus64.gif").c_str();
 
     // load gif
+    this->display->fillScreen(0);
     load_gif_from_file(this->current_gif_path);
 }
 
@@ -287,6 +291,7 @@ void GIFPlayer::loop()
                 if (next_gif != nullptr) {
 
                     // load next gif
+                    this->display->fillScreen(0);
                     this->current_gif_path = next_gif;
                     load_gif_from_file(next_gif);
 
@@ -311,11 +316,16 @@ void GIFPlayer::loop()
 
 void GIFPlayer::finish()
 {
-    // close gif
-    gif->close();
+    if (is_gif_open)
+    {
+        // close gif
+        gif->close();
 
-    // destroy gif
-    delete gif;
+        // destroy gif
+        delete gif;
+
+        is_gif_open = false;
+    }
 }
 
 void GIFPlayer::setting_update(const char* setting, const char *new_setting)
@@ -332,6 +342,7 @@ void GIFPlayer::setting_update(const char* setting, const char *new_setting)
         // // otherwise, save the gif file path to be loaded later
         // else next_gif = new_setting;
 
+        this->display->fillScreen(0);
         this->current_gif_path = new_setting;
         load_gif_from_file(new_setting);
     }
