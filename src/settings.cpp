@@ -9,13 +9,13 @@
 #define LOG_TAG "settings"
 
 // map to hold settings
-std::map< const char*, std::map< const char*, const char* > > settings;
+std::map< std::string, std::map< std::string, std::string > > settings;
 
 // struct for callback parameters
 struct callback_params {
     const char *screen_name;
     const char *setting_name;
-    void (*callback)(const char*);
+    void (*callback)(std::string);
 };
 
 // map to store callbacks
@@ -25,7 +25,7 @@ std::map<int, callback_params> callbacks;
 int next_callback_index = 0;
 
 template <typename T>
-const char *match_key(std::map<const char*, T> m, const char *target_key)
+const char *match_key(std::map<std::string, T> m, const char *target_key)
 {
     /*
         tl;dr this function returns the pointer to a string that can be used as a key,
@@ -89,28 +89,24 @@ void set_setting(const char *screen_name, const char *setting_name, const char *
     const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
     logi(LOG_TAG, "setting setting %s:%s = %s", screen_name_2, setting_name, new_value);
 
-    // match screen and setting names
-    const char *matched_screen_name = match_key<std::map<const char*, const char*>>(settings, screen_name_2);
-    const char *matched_setting_name = match_key<const char *>(settings[matched_screen_name], setting_name);
-
     // set the setting
-    settings[matched_screen_name][matched_setting_name] = new_value;
+    settings[screen_name_2][setting_name] = new_value;
     settings.find(screen_name_2)->second.find(setting_name)->second = new_value;
 
     // call setting reload method of current screen
     // if specified screen is the current screen
-    if (strcmp(matched_screen_name, current_screen_name()) == 0)
+    if (strcmp(screen_name_2, current_screen_name()) == 0)
     {
         // tell the current screen about the update
-        current_screen->setting_update(matched_setting_name, new_value);
+        current_screen->setting_update(setting_name, new_value);
     }
 
     // call any callbacks registered for the setting
     for (const std::pair<int, callback_params> param : callbacks) {
 
         // if screen name and setting name match
-        if (strcmp(param.second.screen_name, matched_screen_name) == 0) {
-            if (strcmp(param.second.setting_name, matched_setting_name) == 0) {
+        if (strcmp(param.second.screen_name, screen_name_2) == 0) {
+            if (strcmp(param.second.setting_name, setting_name) == 0) {
 
                 // if callback isn't null
                 if (param.second.callback) param.second.callback(new_value);
@@ -127,23 +123,18 @@ std::string get_setting(const char *screen_name, const char *setting_name, const
 {
     // if screen name is passed as nullptr, use the current screen name
     const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
-    logi(LOG_TAG, "getting setting %s:%s, default %s", screen_name_2, setting_name, default_value);
-
-    // match screen and setting names
-    const char *matched_screen_name = match_key<std::map<const char*, const char*>>(settings, screen_name_2);
-    const char *matched_setting_name = match_key<const char *>(settings[matched_screen_name], setting_name);
 
     // if there are no settings for screen name, return default value
-    if      (!settings.count(matched_screen_name))                       return default_value;
+    if      (!settings.count(screen_name_2))               return default_value;
 
     // if there are settings for screen name, but none of the specified setting name, return default value
-    else if (!settings[matched_screen_name].count(matched_setting_name)) return default_value;
+    else if (!settings[screen_name_2].count(setting_name)) return default_value;
 
     // otherwise, return the setting value
-    else return settings[matched_screen_name][matched_setting_name];
+    else return std::string(settings[screen_name_2][setting_name]);
 }
 
-int register_setting_callback(const char *screen_name, const char *setting_name, void (*callback)(const char*))
+int register_setting_callback(const char *screen_name, const char *setting_name, void (*callback)(std::string))
 {
     // if screen name is passed as nullptr, use the current screen name
     const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
@@ -169,7 +160,7 @@ std::vector<const char*> get_settings(const char *screen_name)
     for (auto setting : settings[screen_name])
     {
         // add key name to vector
-        setting_names.push_back(setting.first);
+        setting_names.push_back(setting.first.c_str());
     }
 
     return setting_names;
@@ -182,20 +173,18 @@ void serialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc)
     // create object to store settings
     JsonObject obj_settings = doc.createNestedObject("clock25_settings");
 
-    logi(LOG_TAG, "e %d", settings.size());
-
     // for each screen with settings
     for (auto screen : settings)
     {
         // create object for screen
         JsonObject obj_screen = obj_settings.createNestedObject(screen.first);
 
-        logi(LOG_TAG, "%s (%d chars) (at 0x%x)", screen.first, strlen(screen.first), screen.first);
+        // logi(LOG_TAG, "%s (%d chars) (at 0x%x)", screen.first.c_str(), strlen(screen.first.c_str()), screen.first.c_str());
 
         // for each setting
         for (auto setting : screen.second)
         {
-            logi(LOG_TAG, "\t%s = %s", setting.first, setting.second);
+            // logi(LOG_TAG, "\t%s = %s", setting.first, setting.second);
 
             // store setting
             obj_screen[setting.first] = setting.second;
@@ -218,7 +207,6 @@ void deserialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc)
         {
             // get screen name
             const char *screen_name = screen.key().c_str();
-            const char *matched_screen_name = match_key<std::map<const char*, const char*>>(settings, screen_name);
 
             // get screen object
             JsonObject obj_screen = screen.value().as<JsonObject>();
@@ -228,11 +216,10 @@ void deserialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc)
             {
                 // get setting name and value
                 const char *setting_name = setting.key().c_str();
-                const char *matched_setting_name = match_key<const char *>(settings[matched_screen_name], setting_name);
                 const char *setting_value = setting.value().as<const char*>();
 
                 // write setting
-                set_setting(matched_screen_name, matched_setting_name, setting_value);
+                set_setting(screen_name, setting_name, setting_value);
             }
         }
     }

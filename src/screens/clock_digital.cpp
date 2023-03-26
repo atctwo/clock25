@@ -114,7 +114,8 @@ void ClockDigital::setup(Adafruit_GFX *display)
     canvas_time = new GFXcanvas1(PANEL_RES_X, 20);
 
     // get settings
-    this->rainbow_speed = std::stoi(get_setting(nullptr, "Rainbow Speed", "15"));
+    std::string speed = get_setting(nullptr, "Rainbow Speed", "15");
+    this->rainbow_speed = std::stoi(speed.c_str());
 }
 
 uint32_t last_time_update = 0;

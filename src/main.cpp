@@ -18,8 +18,8 @@ uint32_t last_random_time = 0;
 int next_screen = 0;
 int cycle_screens = 0;
 
-void set_cycle_screens(const char *new_value) {
-    cycle_screens = std::stoi(new_value);
+void set_cycle_screens(std::string new_value) {
+    cycle_screens = std::stoi(new_value.c_str());
 }
 
 void setup()
@@ -57,7 +57,7 @@ void setup()
     load_settings(SD);
     
     // start!
-    switch_screen(0);
+    switch_screen(1);
     display->setBrightness(255);
 }
 

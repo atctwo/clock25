@@ -20,7 +20,7 @@ std::string get_setting(const char *screen_name, const char *setting_name, const
 /**
  * Register a callback function to be called when a function changes
 */
-int register_setting_callback(const char *screen_name, const char *setting_name, void (*callback)(const char*));
+int register_setting_callback(const char *screen_name, const char *setting_name, void (*callback)(std::string));
 
 /**
  * Deregister a previously registered callback
