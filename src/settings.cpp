@@ -87,7 +87,10 @@ void set_setting(const char *screen_name, const char *setting_name, const char *
 {
     // if screen name is passed as nullptr, use the current screen name
     const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
-    logi(LOG_TAG, "setting setting %s:%s = %s", screen_name_2, setting_name, new_value);
+
+    // if the screen is <wifi>, redact the actual value to prevent printing passwords
+    const char *setting_value_to_print = (strcmp(screen_name, "<wifi>") == 0) ? "[redacted]" : new_value;
+    logi(LOG_TAG, "setting setting %s:%s = %s", screen_name_2, setting_name, setting_value_to_print);
 
     // set the setting
     settings[screen_name_2][setting_name] = new_value;

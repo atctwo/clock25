@@ -6,6 +6,7 @@
 #include "rtc.h"
 #include "settings.h"
 #include "sd.h"
+#include "wifi.h"
 #include "screens/screens.h"
 #include "log.h"
 #include <SPIFFS.h>
@@ -45,7 +46,6 @@ void setup()
     setup_sensors();
     setup_rtc();
     setup_sd();
-
     // setup screen subsystem and settings
     setup_screens();
     set_setting("<system>", "Cycle Screens", "0");
@@ -56,6 +56,10 @@ void setup()
     // load settings from sd card
     load_settings(SD);
     
+    // setup wifi
+    setup_wifi();
+    connect_wifi();
+
     // start!
     switch_screen(1);
     display->setBrightness(255);
