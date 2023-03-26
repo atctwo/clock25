@@ -136,7 +136,7 @@ void ClockDigital::loop()
             canvas_time->setFont(&VarelaRound_Regular11pt7b);
             canvas_time->printf("%02d:%02d\n",
                 now.hour(),
-                now.minute()+5 // TODO: stop adding an extra 5 mins
+                now.minute()
             );
             drawRainbowBitmap(display, 0, 4, canvas_time->getBuffer(), PANEL_RES_X, 20, 0, ((millis() % 60000) * this->rainbow_speed)/1000);
 

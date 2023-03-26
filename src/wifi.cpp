@@ -73,37 +73,6 @@ bool connect_wifi()
                 break;
             }
         }
-
-        // check wifi status
-        // switch(WiFi.status())
-        // {
-        //     case WL_IDLE_STATUS:
-        //         logi(LOG_TAG, "connection status: idle");
-        //         // wifi_setup = false;
-        //         break;
-
-        //     case WL_NO_SSID_AVAIL:
-        //         logi(LOG_TAG, "connection status: no ssid available");
-        //         // wifi_setup = false;
-        //         break;
-
-        //     case WL_CONNECT_FAILED:
-        //         logi(LOG_TAG, "connection status: failed to connect");
-        //         // wifi_setup = false;
-        //         break;
-
-        //     case WL_DISCONNECTED:
-        //         logi(LOG_TAG, "connection status: disconnected");
-        //         // wifi_setup = false;
-        //         break;
-
-        //     case WL_CONNECTED:
-        //         logi(LOG_TAG, "connection status: connected!");
-        //         // logi(LOG_TAG, "IPv4 address is %s!", WiFi.localIP().toString().c_str());
-        //         // wifi_setup = true;
-        //         break;
-        // }
-
     }
 
     return wifi_setup;
