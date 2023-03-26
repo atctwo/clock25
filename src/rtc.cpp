@@ -22,6 +22,9 @@ bool setup_rtc(TwoWire *wire)
         return false;
     }
 
+    // stop rtc
+    rtc.stop();
+
     // set rtc time if not already set
     if (! rtc.initialized() || rtc.lostPower()) {
         logi(LOG_TAG, "setting initial rtc time");
@@ -46,4 +49,9 @@ bool rtc_available() { return rtc_setup; }
 DateTime get_rtc_time()
 {
     return rtc.now();
+}
+
+void set_rtc_time(DateTime time)
+{
+    rtc.adjust(time);
 }

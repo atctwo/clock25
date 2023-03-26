@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "sd.h"
 #include "wifi.h"
+#include "ntp.h"
 #include "screens/screens.h"
 #include "log.h"
 #include <SPIFFS.h>
@@ -16,11 +17,20 @@
 uint32_t last_switch_time = 0;
 uint32_t last_brightness_time = 0;
 uint32_t last_random_time = 0;
+
+uint32_t last_ntp_update = 0;
+uint32_t ntp_update_frequency = 0;
+
 int next_screen = 0;
 int cycle_screens = 0;
 
 void set_cycle_screens(std::string new_value) {
     cycle_screens = std::stoi(new_value.c_str());
+}
+
+void set_ntp_update_frequency(std::string new_value) {
+    last_ntp_update = millis(); // reset ntp timer
+    ntp_update_frequency = std::stoi(new_value.c_str());
 }
 
 void setup()
@@ -46,22 +56,23 @@ void setup()
     setup_sensors();
     setup_rtc();
     setup_sd();
+
     // setup screen subsystem and settings
     setup_screens();
-    set_setting("<system>", "Cycle Screens", "0");
     register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
-    set_setting("<system>", "City", "2655984"); // Belfast, Northern Ireland
-    set_setting("<system>", "NTP Update Frequency", "86400000"); // 24 hours in milliseconds
+    register_setting_callback("<ntp>", "NTP Update Frequency", set_ntp_update_frequency);
 
     // load settings from sd card
-    load_settings(SD);
+    if (sd_available()) load_settings(SD);
+    else logi(LOG_TAG, "Can't derserialise settings from SD because SD isn't available");
     
     // setup wifi
     setup_wifi();
     connect_wifi();
+    get_time_from_ntp();
 
     // start!
-    switch_screen(1);
+    switch_screen(0);
     display->setBrightness(255);
 }
 
@@ -91,6 +102,14 @@ void loop()
             last_brightness_time = millis();
 
         } else display->setBrightness(128);
+    }
+
+    // ntp update
+    if (ntp_update_frequency != 0) {
+        if (millis() - last_ntp_update > ntp_update_frequency) {
+            get_time_from_ntp();
+            last_ntp_update = millis();
+        }
     }
 
     // randomise rainbow speed

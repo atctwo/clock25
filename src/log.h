@@ -17,6 +17,9 @@
 #define logi(tag, fmt, ...) LOG_OUTPUT.printf("[%s] " fmt "\n", tag, ## __VA_ARGS__)
 
 // #define loge(tag, fmt, ...) (void) 0;
+#define logw(tag, fmt, ...) LOG_OUTPUT.printf("[%s] " fmt "\n", tag, ## __VA_ARGS__)
+
+// #define loge(tag, fmt, ...) (void) 0;
 #define loge(tag, fmt, ...) LOG_OUTPUT.printf("[%s] " fmt "\n", tag, ## __VA_ARGS__)
 
 
