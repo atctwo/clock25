@@ -1,6 +1,8 @@
 #include "pins.h"
 #include "display.h"
 #include "log.h"
+#include "fonts/varela_round_6.h"
+#include "fonts/varela_round_7.h"
 
 #define LOG_TAG "display"
 
@@ -29,6 +31,14 @@ void setup_display()
         display = new MatrixPanel_I2S_DMA(mxconfig);
         display->begin();
         display->setBrightness8(90); //0-255
+
+        // show splash screen
+        int16_t x, y;
+        uint16_t w, h;
+        display->setFont(&VarelaRound_Regular6pt7b);
+        display->getTextBounds("clock25", 0, 0, &x, &y, &w, &h);
+        display->setCursor((PANEL_RES_X/2) - (w/2), (PANEL_RES_Y/2) + (h/2));
+        display->print("clock25");
 
         logi(LOG_TAG, "initialised display! :)");
 
