@@ -71,6 +71,7 @@ void setup()
     connect_wifi([](){
         // only do these thing when wifi is connected
         get_time_from_ntp();
+        setup_ntp_server();
     });
 
     // start!
