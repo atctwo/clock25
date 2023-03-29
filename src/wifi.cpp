@@ -4,6 +4,7 @@
 #include "log.h"
 
 #include <WiFi.h>
+#include <ESPmDNS.h>
 
 #define LOG_TAG "wifi"
 #define CONNECT_TIMEOUT 10000 // 10 seconds
@@ -28,6 +29,10 @@ void wifi_event_callback(WiFiEvent_t event)
         case ARDUINO_EVENT_WIFI_STA_GOT_IP:
             logi(LOG_TAG, "Got IPv4 address: %s!", WiFi.localIP().toString().c_str());
             wifi_setup = true;
+
+            // begin mdns
+            if (!MDNS.begin("clock25")) logw(LOG_TAG, "Error setting up mDNS");
+            else                        logi(LOG_TAG, "Setup mDNS ok");
 
             // run wifi connect callback
             if (wifi_connect_cb) {
