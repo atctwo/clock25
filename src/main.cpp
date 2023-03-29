@@ -68,8 +68,10 @@ void setup()
     
     // setup wifi
     setup_wifi();
-    connect_wifi();
-    get_time_from_ntp();
+    connect_wifi([](){
+        // only do these thing when wifi is connected
+        get_time_from_ntp();
+    });
 
     // start!
     switch_screen(0);
