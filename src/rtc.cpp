@@ -17,9 +17,15 @@ bool setup_rtc(TwoWire *wire)
 
     // begin rtc
     if (!rtc.begin(wire)) {
-        loge(LOG_TAG, "failed to setup rtc");
-        rtc_setup = false;
-        return false;
+
+        // reset and try again
+        rtc.reset();
+        if (!rtc.begin(wire))
+        {
+            loge(LOG_TAG, "failed to setup rtc");
+            rtc_setup = false;
+            return false;
+        }
     }
 
     // stop rtc
