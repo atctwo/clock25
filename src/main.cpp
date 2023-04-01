@@ -99,14 +99,14 @@ void loop()
     }
 
     // update brightness
-    // if (millis() - last_brightness_time > 500) {
-    //     if (brightness_available()) {
+    if (millis() - last_brightness_time > 500) {
+        if (brightness_available()) {
 
-    //         set_display_brightness(get_brightness());
-    //         last_brightness_time = millis();
+            set_display_brightness(get_brightness());
+            last_brightness_time = millis();
 
-    //     } else set_display_brightness(128);
-    // }
+        } else set_display_brightness(128);
+    }
 
     // ntp update
     if (ntp_update_frequency != 0) {

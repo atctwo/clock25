@@ -49,8 +49,9 @@ uint8_t get_display_brightness();
  * @param target the target brightness, from 0 to 255
  * @param callback a function to call when the fade is complete
  * @param fade_time the time (in milliseconds) that the fade animation should last
+ * @param fade_out_in whether the call to this function is part of a fade out - fade in cycle
 */
-void fade_display(uint8_t target=display_brightness, std::function<void()> callback=nullptr, uint16_t fade_time=40);
+void fade_display(uint8_t target=display_brightness, std::function<void()> callback=nullptr, uint16_t fade_time=40, bool fade_out_in=false);
 
 /**
  * If there is a fade in progress, this function changes the screen brightness when needed.

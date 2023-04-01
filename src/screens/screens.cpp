@@ -5,7 +5,7 @@
 #include "log.h"
 
 #define LOG_TAG "screens"
-
+#define SCREEN_FADE_TIME 40
 
 //-----------------------------------------------------
 // Screen vector initialisation
@@ -112,7 +112,7 @@ void next_screen()
     switching_screen = false;
 
     // fade display back in
-    fade_display();
+    fade_display(get_display_brightness(), nullptr, SCREEN_FADE_TIME, true);
 }
 
 void update_screen(Adafruit_GFX *display)
@@ -140,7 +140,7 @@ void update_screen(Adafruit_GFX *display)
         switching_screen = true;
 
         // asynchronously fade out
-        fade_display(0, next_screen);        
+        fade_display(0, next_screen, SCREEN_FADE_TIME, true);        
     }
 }
 
