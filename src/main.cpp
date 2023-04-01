@@ -76,12 +76,13 @@ void setup()
 
     // start!
     switch_screen(0);
-    display->setBrightness(255);
+    set_display_brightness(255);
 }
 
 void loop()
 {
     update_screen(display);
+    update_fade();
 
     // cycle screens
     if (cycle_screens)
@@ -98,14 +99,14 @@ void loop()
     }
 
     // update brightness
-    if (millis() - last_brightness_time > 500) {
-        if (brightness_available()) {
+    // if (millis() - last_brightness_time > 500) {
+    //     if (brightness_available()) {
 
-            display->setBrightness(get_brightness());
-            last_brightness_time = millis();
+    //         set_display_brightness(get_brightness());
+    //         last_brightness_time = millis();
 
-        } else display->setBrightness(128);
-    }
+    //     } else set_display_brightness(128);
+    // }
 
     // ntp update
     if (ntp_update_frequency != 0) {

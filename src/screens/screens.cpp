@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "display.h"
 #include "settings.h"
 #include "pins.h"
 #include "log.h"
@@ -40,6 +41,7 @@ std::vector<ScreenInfo> screens = {
 ScreenBase *current_screen = NULL;       // reference to object for the currently loaded screen
 int current_screen_id = -1;              // id of the current screen's class creator in the `screens` vector
 // int next_screen_id = -1;                 // internal flag + id for which screen to switch to
+bool switching_screen = false;           // whether the screen is currently being switched
 GFXcanvas16 canvas(PANEL_RES_X, PANEL_RES_Y);
 
 void setup_screens()
@@ -81,6 +83,38 @@ void switch_screen(int new_screen_id)
     }
 }
 
+void next_screen()
+{
+    // if there is already a screen running
+    if (current_screen)
+    {
+        // call finish function for current screen
+        current_screen->finish();
+
+        // clean up current screen
+        delete current_screen;
+    }
+
+    // clear screen
+    display->fillScreen(0);
+    display->setTextColor(0xffff, 0);
+
+    // instantiate new screen
+    current_screen = screens[next_screen_id].creator();
+    current_screen_id = next_screen_id;
+
+    // set up new screen
+    // current_screen->setup(display);
+    current_screen->setup(&canvas);
+
+    // clear next_screen_id
+    next_screen_id = -1;
+    switching_screen = false;
+
+    // fade display back in
+    fade_display();
+}
+
 void update_screen(Adafruit_GFX *display)
 {
     if (current_screen)
@@ -94,39 +128,19 @@ void update_screen(Adafruit_GFX *display)
         // draw canvas
         display->drawRGBBitmap(0, 0, canvas.getBuffer(), PANEL_RES_X, PANEL_RES_Y);
     }
-    else { logi(LOG_TAG, "no screen loaded :/"); }
+    // else { logi(LOG_TAG, "no screen loaded :/"); }
 
     // check if we're switching to a new screen
-    if (next_screen_id != -1)
+    // and that the switching screen flag isn't already set
+    if (next_screen_id != -1 && !switching_screen)
     {
         logi(LOG_TAG, "switching screen to screen %d", next_screen_id);
 
-        // if there is already a screen running
-        if (current_screen)
-        {
-            // call finish function for current screen
-            current_screen->finish();
+        // set the switching screen flag
+        switching_screen = true;
 
-            // clean up current screen
-            delete current_screen;
-        }
-
-        // clear screen
-        display->fillScreen(0);
-        display->setTextColor(0xffff, 0);
-
-        // instantiate new screen
-        current_screen = screens[next_screen_id].creator();
-        current_screen_id = next_screen_id;
-
-        // set up new screen
-        // current_screen->setup(display);
-        current_screen->setup(&canvas);
-
-        // clear next_screen_id
-        next_screen_id = -1;
-
-        
+        // asynchronously fade out
+        fade_display(0, next_screen);        
     }
 }
 
