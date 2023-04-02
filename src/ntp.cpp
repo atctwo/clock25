@@ -45,7 +45,7 @@ void get_time_from_ntp()
         // get time and write to rtc
         struct tm timeinfo;
         getLocalTime(&timeinfo);
-        DateTime dt(timeinfo.tm_year - 100, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        DateTime dt(timeinfo.tm_year - 100, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
         set_rtc_time(dt);
 
         // update ntp server reftime
