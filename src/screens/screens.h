@@ -149,7 +149,7 @@ extern int current_screen_id;       // id of the current screen's class creator 
 static int next_screen_id = -1;     // internal flag + id for which screen to switch to
 
 void setup_screens();
-void switch_screen(int new_screen_id);
+bool switch_screen(int new_screen_id);
 void update_screen(Adafruit_GFX *display);
 const char *current_screen_name();
 

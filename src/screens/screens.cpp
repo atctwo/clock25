@@ -5,7 +5,7 @@
 #include "log.h"
 
 #define LOG_TAG "screens"
-#define SCREEN_FADE_TIME 40
+#define SCREEN_FADE_TIME 250
 
 //-----------------------------------------------------
 // Screen vector initialisation
@@ -64,7 +64,7 @@ void setup_screens()
     logi(LOG_TAG, "setup screens!");
 }
 
-void switch_screen(int new_screen_id)
+bool switch_screen(int new_screen_id)
 {
     if (new_screen_id >= 0 && new_screen_id < screens.size())
     {
@@ -80,7 +80,10 @@ void switch_screen(int new_screen_id)
     else
     {
         loge(LOG_TAG, "invalid screen id (no screen %d)", new_screen_id);
+        return false;
     }
+
+    return true;
 }
 
 void next_screen()
@@ -95,9 +98,11 @@ void next_screen()
         delete current_screen;
     }
 
-    // clear screen
+    // clear screen and reset font
     display->fillScreen(0);
     display->setTextColor(0xffff, 0);
+    display->setCursor(0, 0);
+    display->setFont(NULL);
 
     // instantiate new screen
     current_screen = screens[next_screen_id].creator();
