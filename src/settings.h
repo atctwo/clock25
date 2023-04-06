@@ -31,7 +31,12 @@ void remove_setting_callback(int callback_id);
 /**
  * Returns a list of the names of each setting for a given screen
 */
-std::vector<const char*> get_settings(const char *screen_name);
+std::vector<std::string> get_settings(const char *screen_name);
+
+/**
+ * Returns a list of screens that have settings registered to them
+*/
+std::vector<std::string> get_screens();
 
 /**
  * Writes every setting into a JSON document

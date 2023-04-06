@@ -155,15 +155,30 @@ void remove_setting_callback(int callback_id)
     callbacks.erase(callback_id);
 }
 
-std::vector<const char*> get_settings(const char *screen_name)
+std::vector<std::string> get_settings(const char *screen_name)
 {
-    std::vector<const char*> setting_names;
+    std::vector<std::string> setting_names;
 
     // for each setting of the screen
     for (auto setting : settings[screen_name])
     {
         // add key name to vector
         setting_names.push_back(setting.first.c_str());
+    }
+
+    return setting_names;
+}
+
+std::vector<std::string> get_screens()
+{
+    std::vector<std::string> setting_names;
+
+    // for each screen
+    for (auto setting : settings)
+    {
+        // add key name to vector
+        setting_names.push_back(setting.first.c_str());
+        logi(LOG_TAG, "%s", setting.first.c_str());
     }
 
     return setting_names;
