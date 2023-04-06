@@ -8,6 +8,7 @@
 #include "sd.h"
 #include "wifi.h"
 #include "ntp.h"
+#include "server.h"
 #include "screens/screens.h"
 #include "log.h"
 #include <SPIFFS.h>
@@ -72,6 +73,7 @@ void setup()
         // only do these thing when wifi is connected
         get_time_from_ntp();
         setup_ntp_server();
+        setup_http_server();
     });
 
     // start!
@@ -83,6 +85,9 @@ void loop()
 {
     update_screen(display);
     update_fade();
+
+    // handle server requests
+    server_handle_client();
 
     // cycle screens
     if (cycle_screens)
