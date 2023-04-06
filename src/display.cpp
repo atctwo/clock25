@@ -5,6 +5,7 @@
 #include "fonts/varela_round_7.h"
 
 #define LOG_TAG "display"
+#define SET_BRIGHTNESS_FADE_TIME 100
 
 MatrixPanel_I2S_DMA *display = nullptr;
 uint8_t display_brightness = 255;
@@ -66,7 +67,7 @@ void set_display_brightness(uint8_t new_brightness)
         // logi(LOG_TAG, "updating brightness to %d", new_brightness);
         display_brightness = new_brightness; 
 
-        fade_display(display_brightness, nullptr, 10);
+        fade_display(display_brightness, nullptr, SET_BRIGHTNESS_FADE_TIME);
 
         // current_brightness = new_brightness;
         // display->setBrightness(display_brightness);
@@ -89,7 +90,10 @@ void fade_display(uint8_t target, std::function<void()> callback, uint16_t fade_
     target_brightness = target;
 
     // set fade out in cycle - fade out part
-    if (fade_out_in && fade_active == 1) fade_out_in_cycle = true;
+    if (fade_out_in && fade_active == 1) {
+        // logi(LOG_TAG, "setting fade out-in cycle flag");
+        fade_out_in_cycle = true;
+    }
 
     // calculate how long to stay on each brightness level
     // and how much to change the brightness for each level
@@ -103,6 +107,9 @@ void fade_display(uint8_t target, std::function<void()> callback, uint16_t fade_
     if (callback) fade_callback = callback;
 
     // logi(LOG_TAG, "fading screen, active = %d, current = %d, target = %d, step time = %d ms, step size = %d, range = %d", fade_active, current_brightness, target, step_time, step_size, brightness_range);
+
+    // restart timer
+    last_step_time = millis();
 }
 
 void update_fade()
@@ -111,17 +118,20 @@ void update_fade()
     if (fade_active)
     {
         // if the fade step period has elapsed
-        if (millis() - last_step_time > step_time)
+        uint32_t dt = millis() - last_step_time;
+        if (dt > step_time)
         {
+            uint16_t steps_taken = dt / max(step_time, (uint16_t) 1);
+
             // change temp brightness depending on fade type
-            if (fade_active == 1) current_brightness -= step_size;
-            if (fade_active == 2) current_brightness += step_size;
+            if (fade_active == 1) current_brightness -= step_size * steps_taken;
+            if (fade_active == 2) current_brightness += step_size * steps_taken;
 
             if (current_brightness < 0) current_brightness = 0;
             if (current_brightness > 255) current_brightness = 255;
 
             // set brightness
-            // logi(LOG_TAG, "current=%d target=%d step_size=%d active=%d", current_brightness, target_brightness, step_size, fade_active);
+            // logi(LOG_TAG, "current=%d target=%d step_size=%d active=%d step_time=%d, dt=%d steps=%d", current_brightness, target_brightness, step_size, fade_active, step_time, dt, steps_taken);
             display->setBrightness(current_brightness);
 
             // check if fade has ended
@@ -130,7 +140,10 @@ void update_fade()
                 // logi(LOG_TAG, "fade finished!");
 
                 // clear fade out in cycle flag
-                if (fade_out_in_cycle && fade_active == 1) fade_out_in_cycle = false;
+                if (fade_out_in_cycle && fade_active == 2) {
+                    // logi(LOG_TAG, "clearing fade out-in cycle flag");
+                    fade_out_in_cycle = false;
+                }
 
                 // reset fade variables
                 step_time = 0;
