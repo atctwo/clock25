@@ -22,11 +22,11 @@ void ScreenTest::loop()
     this->display->printf("clock25 %c\n", 0x03);
 
     this->display->setTextColor(0xECDE);
-    logi(LOG_TAG, "setting up screens");
-    logi(LOG_TAG, "built-in screens:");
+    // logi(LOG_TAG, "setting up screens");
+    // logi(LOG_TAG, "built-in screens:");
     for (ScreenInfo screen : screens)
     {
-        logi(LOG_TAG, "- %s", screen.name);
+        // logi(LOG_TAG, "- %s", screen.name);
         this->display->printf("%s\n", screen.name);
     }
 }
