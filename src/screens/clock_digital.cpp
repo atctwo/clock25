@@ -5,6 +5,7 @@
 #include "log.h"
 
 #include <string>
+#include <WiFi.h>
 
 #include "../fonts/open_sans_7.h"
 #include "../fonts/open_sans_10.h"
@@ -19,6 +20,34 @@
 #define LOG_TAG "screen:clock_digital"
 
 GFXcanvas1 *canvas_time;
+
+
+// icons for showing wifi signal strength
+// '1', 7x5px
+const unsigned char wifi_icon_1 [] PROGMEM = {
+	0x00, 0x00, 0x00, 0x80, 0x80
+};
+// '2', 7x5px
+const unsigned char wifi_icon_2 [] PROGMEM = {
+	0x00, 0x00, 0x20, 0x20, 0x20
+};
+// '3', 7x5px
+const unsigned char wifi_icon_3 [] PROGMEM = {
+	0x00, 0x08, 0x08, 0x08, 0x08
+};
+// '4', 7x5px
+const unsigned char wifi_icon_4 [] PROGMEM = {
+	0x02, 0x02, 0x02, 0x02, 0x02
+};
+
+int wifi_strength_w = 7;
+int wifi_strength_h = 5;
+int wifi_strength_x = PANEL_RES_X - wifi_strength_w - 1;
+int wifi_strength_y = 0; //PANEL_RES_Y - wifi_strength_h;
+uint16_t wifi_colour_active = 0xffff;
+uint16_t wifi_colour_inactive = 0x52AA;
+
+
 
 // convert a 24 bit colour (RGB888) to a 16 bit colour (RGB565)
 // https://afterthoughtsoftware.com/posts/convert-rgb888-to-rgb565
@@ -160,6 +189,23 @@ void ClockDigital::loop()
                 0xb0,   // ° symbol
                 get_humidity()
             );
+
+            // show wifi signal strength
+            // display->setCursor(0, 10);
+            // display->setTextColor(0xffff);
+            // display->printf("rssi: %d", WiFi.RSSI());
+
+            uint16_t wifi_colour_1 = (WiFi.RSSI() > -70 && WiFi.isConnected()) ? wifi_colour_active : wifi_colour_inactive;
+            display->drawBitmap(wifi_strength_x, wifi_strength_y, wifi_icon_1, wifi_strength_w, wifi_strength_h, wifi_colour_1);
+
+            uint16_t wifi_colour_2 = (WiFi.RSSI() > -67 && WiFi.isConnected()) ? wifi_colour_active : wifi_colour_inactive;;
+            display->drawBitmap(wifi_strength_x, wifi_strength_y, wifi_icon_2, wifi_strength_w, wifi_strength_h, wifi_colour_2);
+
+            uint16_t wifi_colour_3 = (WiFi.RSSI() > -55 && WiFi.isConnected()) ? wifi_colour_active : wifi_colour_inactive;;
+            display->drawBitmap(wifi_strength_x, wifi_strength_y, wifi_icon_3, wifi_strength_w, wifi_strength_h, wifi_colour_3);
+
+            uint16_t wifi_colour_4 = (WiFi.RSSI() > -30 && WiFi.isConnected()) ? wifi_colour_active : wifi_colour_inactive;;
+            display->drawBitmap(wifi_strength_x, wifi_strength_y, wifi_icon_4, wifi_strength_w, wifi_strength_h, wifi_colour_4);
 
             last_time_update = millis();
         }
