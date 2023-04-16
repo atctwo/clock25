@@ -3,35 +3,46 @@ function load_screens()
 {
     console.log("Loading Screens");
 
-    fetch("/api/get/screen/").
-    then(res => res.json()).
-    then(data => {
-        console.log(data);
+    return new Promise((resolve, reject) => {
 
-        // get select
-        let screens = document.getElementById("select-screens");
+        fetch("http://clock25.local/api/get/screen/").
+            then(res => res.json()).
+            then(data => {
+                console.log(data);
 
-        // clear select
-        while (screens.childElementCount > 0) screens.remove(0);
+                // get select
+                let screens = document.getElementById("select-screens");
 
-        // add screens
-        data.screens.forEach((screen, i) => {
-            
-            // create new option element
-            let opt = document.createElement("option");
-            opt.innerText = screen;
-            opt.value = i;
+                // clear select
+                while (screens.childElementCount > 0) screens.remove(0);
 
-            // add option to select
-            screens.add(opt);
+                // add screens
+                data.screens.forEach((screen, i) => {
+                    
+                    // create new option element
+                    let opt = document.createElement("option");
+                    opt.innerText = screen;
+                    opt.value = i;
 
-        });
+                    // add option to select
+                    screens.add(opt);
 
-        // set selected element to current screen
-        screens.value = data.current;
+                });
 
-    }).
-    catch(err => console.log(err));
+                // set selected element to current screen
+                screens.value = data.current;
+
+                // resolve promise
+                resolve();
+
+            }).
+            catch(err => {
+                console.log(err);
+                show_error(err);
+                reject(err);
+            });
+
+    });
 }
 
 function set_screen()
@@ -45,7 +56,7 @@ function set_screen()
     let screen_id = screens.value;
 
     // send new screen id to server
-    fetch("/api/set/screen/", {
+    fetch("http://clock25.local/api/set/screen/", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -72,144 +83,156 @@ function load_settings()
 {
     console.log("Loading settings");
 
-    // get settings from clock
-    fetch("/api/get/setting/").
-    then(res => res.json()).
-    then(data => {
+    return new Promise((resolve, reject) => {
+       
+        // get settings from clock
+        fetch("http://clock25.local/api/get/setting/").
+        then(res => res.json()).
+        then(data => {
 
-        if (data.error) {
-            console.error("Error getting settings:", data.reason)
-            show_error(data.reason);
-        } else {
+            if (data.error) {
+                console.error("Error getting settings:", data.reason)
+                show_error(data.reason);
+                reject(data.reason);
+            } else {
 
-            // first, remove all existing settings sections
-            let existing_sections = document.getElementsByClassName("setting-section generated");
-            for (var i = 0; i < existing_sections.length; i++)
-            {
-                existing_sections[i].parentElement.removeChild(existing_sections[i]);
-            }
-
-            console.log(data);
-
-            // create a new section for each setting group
-            let main_container = document.getElementById("main-container");
-            data.screens.forEach((screen, i) => {
-
-                // create new details and summary elements
-                let details = document.createElement("details");
-                let summary = document.createElement("summary");
-                let contents = document.createElement("div");
-                let table = document.createElement("table");
-
-                // set classes
-                details.classList.add("setting-section");
-                details.classList.add("generated");
-                // details.open = true;
-
-                // set section title
-                switch(screen.name)
+                // first, remove all existing settings sections
+                let existing_sections = document.getElementsByClassName("setting-section generated");
+                for (var i = 0; i < existing_sections.length; i++)
                 {
-                    case "<ntp>":
-                        summary.innerText = "NTP (Network Time Protocol)"
-                        break;
-
-                    case "<system>":
-                        summary.innerText = "System"
-                        break;
-
-                    case "<weather>":
-                        summary.innerText = "Weather Settings"
-                        break;
-
-                    default:
-                        summary.innerText = screen.name;
+                    existing_sections[i].parentElement.removeChild(existing_sections[i]);
                 }
 
-                // add NTP button
-                if (screen.name == "<ntp>")
-                {
-                    // create button
-                    let ntp_button = document.createElement("button");
-                    ntp_button.innerText = "Get time using NTP";
-                    ntp_button.onclick = get_time_from_ntp;
-                    contents.appendChild(ntp_button);
-                }
+                console.log(data);
 
-                // add settings to table
-                screen.settings.forEach((setting, j) => {
+                // create a new section for each setting group
+                let main_container = document.getElementById("main-container");
+                data.screens.forEach((screen, i) => {
 
-                    // create new table row
-                    let row = table.insertRow(-1);
+                    // create new details and summary elements
+                    let details = document.createElement("details");
+                    let summary = document.createElement("summary");
+                    let contents = document.createElement("div");
+                    let table = document.createElement("table");
 
-                    // create cell for setting name
-                    let cell_name = row.insertCell(-1);
-                    cell_name.innerText = setting.name;
+                    // set classes
+                    details.classList.add("setting-section");
+                    details.classList.add("generated");
+                    // details.open = true;
 
-                    // create cell for setting value
-                    let cell_value = row.insertCell(-1);
-                    let setting_input;
-
-                    // if there are no pre-determined values, use a regular input
-                    if (!("values" in setting))
+                    // set section title
+                    switch(screen.name)
                     {
-                        setting_input = document.createElement("input");
-                        setting_input.value = setting.value;
-                        if (!isNaN(setting.value)) setting_input.type = "number";   // if value is numeric, set the input type to be number
-                        cell_value.appendChild(setting_input);
+                        case "<ntp>":
+                            summary.innerText = "NTP (Network Time Protocol)"
+                            break;
+
+                        case "<system>":
+                            summary.innerText = "System"
+                            break;
+
+                        case "<weather>":
+                            summary.innerText = "Weather Settings"
+                            break;
+
+                        default:
+                            summary.innerText = screen.name;
                     }
-                    else // otherwise, use a <select> tag
+
+                    // add NTP button
+                    if (screen.name == "<ntp>")
                     {
-                        // create select wrapper
-                        let select_wrapper = document.createElement("div");
-                        select_wrapper.classList.add("select-wrapper");
+                        // create button
+                        let ntp_button = document.createElement("button");
+                        ntp_button.innerText = "Get time using NTP";
+                        ntp_button.onclick = get_time_from_ntp;
+                        contents.appendChild(ntp_button);
+                    }
 
-                        // create select
-                        setting_input = document.createElement("select");
+                    // add settings to table
+                    screen.settings.forEach((setting, j) => {
 
-                        // add options
-                        setting.values.forEach(val => {
+                        // create new table row
+                        let row = table.insertRow(-1);
 
-                            // create option
-                            var opt = document.createElement("option");
+                        // create cell for setting name
+                        let cell_name = row.insertCell(-1);
+                        cell_name.innerText = setting.name;
 
-                            // set opt name and value
-                            opt.innerText = val;
-                            opt.value = val;
+                        // create cell for setting value
+                        let cell_value = row.insertCell(-1);
+                        let setting_input;
 
-                            // add option to select
-                            setting_input.appendChild(opt);
+                        // if there are no pre-determined values, use a regular input
+                        if (!("values" in setting))
+                        {
+                            setting_input = document.createElement("input");
+                            setting_input.value = setting.value;
+                            if (!isNaN(setting.value)) setting_input.type = "number";   // if value is numeric, set the input type to be number
+                            cell_value.appendChild(setting_input);
+                        }
+                        else // otherwise, use a <select> tag
+                        {
+                            // create select wrapper
+                            let select_wrapper = document.createElement("div");
+                            select_wrapper.classList.add("select-wrapper");
 
+                            // create select
+                            setting_input = document.createElement("select");
+
+                            // add options
+                            setting.values.forEach(val => {
+
+                                // create option
+                                var opt = document.createElement("option");
+
+                                // set opt name and value
+                                opt.innerText = val;
+                                opt.value = val;
+
+                                // add option to select
+                                setting_input.appendChild(opt);
+
+                            });
+
+                            // select current value
+                            setting_input.value = setting.value;
+
+                            // add to document
+                            select_wrapper.appendChild(setting_input);
+                            cell_value.appendChild(select_wrapper);
+                        }
+
+                        // input element oninput
+                        setting_input.addEventListener("change", e => {
+                            console.log(`New value for ${screen.name}:${setting.name}: ${setting_input.value}`);
+                            set_setting(screen.name, setting.name, setting_input.value, setting_input)
                         });
 
-                        // select current value
-                        setting_input.value = setting.value;
-
-                        // add to document
-                        select_wrapper.appendChild(setting_input);
-                        cell_value.appendChild(select_wrapper);
-                    }
-
-                    // input element oninput
-                    setting_input.addEventListener("change", e => {
-                        console.log(`New value for ${screen.name}:${setting.name}: ${setting_input.value}`);
-                        set_setting(screen.name, setting.name, setting_input.value, setting_input)
                     });
+
+                    // add summary and contents to details
+                    contents.appendChild(table);
+                    details.appendChild(summary);
+                    details.appendChild(contents);
+
+                    main_container.appendChild(details);
 
                 });
 
-                // add summary and contents to details
-                contents.appendChild(table);
-                details.appendChild(summary);
-                details.appendChild(contents);
+                // resolve promise
+                resolve();
 
-                main_container.appendChild(details);
+            }
 
-            });
+        }).
+        catch(err => {
+            console.log(err);
+            show_error(err);
+            reject(err);
+        });
 
-        }
-
-    }).
-    catch(err => console.log(err));
+    });
 }
 
 function set_setting(screen_name, setting_name, value, input)
@@ -223,7 +246,7 @@ function set_setting(screen_name, setting_name, value, input)
     let screen_id = screens.value;
 
     // send new screen id to server
-    fetch("/api/set/setting/", {
+    fetch("http://clock25.local/api/set/setting/", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -256,7 +279,7 @@ function set_setting(screen_name, setting_name, value, input)
 function get_time_from_ntp()
 {
     // send request to get time from ntp
-    fetch("/api/ntp/", {
+    fetch("http://clock25.local/api/ntp/", {
         method: "POST",
         mode: "cors"
     }).
@@ -271,6 +294,12 @@ function get_time_from_ntp()
         console.log(err);
         show_error(err);
     });
+}
+
+function show_main_container()
+{
+    document.getElementById("loading-container").style.display = "none";
+    document.getElementById("main-container").style.display = "flex";
 }
 
 
@@ -297,8 +326,7 @@ function title_easter_egg()
 
 // on document ready
 console.log("Loading thingfy :)");
-load_screens();
-load_settings();
+load_screens().then(load_settings).then(show_main_container)
 
 
 
@@ -312,7 +340,7 @@ load_settings();
 
 
 
-// fetch("/api/get/setting/").
+// fetch("http://clock25.local/api/get/setting/").
 //     then(res => res.json()).
 //     then(data => {
 //         console.log(data);
@@ -329,7 +357,7 @@ load_settings();
 
 //     counter.innerText = slider.value;
 
-//     fetch("/api/set/setting/", {
+//     fetch("http://clock25.local/api/set/setting/", {
 //         method: "POST",
 //         mode: "no-cors", 
 //         headers: {

@@ -170,7 +170,7 @@ table
     align-items: center;
 }
 
-#main-container
+#main-container, #loading-container
 {
     width: 100%;
     max-width: 600px;
@@ -194,6 +194,25 @@ table
     gap: 15px;
 
 }
+
+#main-container
+{
+    display: none;
+}
+
+#loading-container
+{
+    text-align: center;
+    font-size: large;
+    align-items: center;
+}
+
+.la-ball-clip-rotate
+{
+    color: lightseagreen !important;
+    transform: scale(200%);
+}
+
 
 #error-box
 {

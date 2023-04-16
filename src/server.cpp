@@ -237,6 +237,7 @@ void setup_http_server()
     server.serveStatic("/index.html", FILESYSTEM, "/web/index.html");
     server.serveStatic("/index.js", FILESYSTEM, "/web/index.js");
     server.serveStatic("/index.css", FILESYSTEM, "/web/index.css");
+    server.serveStatic("/ball.css", FILESYSTEM, "/web/ball.css");
 
     // register api routes
     server.on("/api/get/screen/", server_cb_api_screens);
