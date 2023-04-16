@@ -3,7 +3,7 @@ function load_screens()
 {
     console.log("Loading Screens");
 
-    fetch("http://clock25.local/api/get/screen/").
+    fetch("/api/get/screen/").
     then(res => res.json()).
     then(data => {
         console.log(data);
@@ -45,7 +45,7 @@ function set_screen()
     let screen_id = screens.value;
 
     // send new screen id to server
-    fetch("http://clock25.local/api/set/screen/", {
+    fetch("/api/set/screen/", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -73,7 +73,7 @@ function load_settings()
     console.log("Loading settings");
 
     // get settings from clock
-    fetch("http://clock25.local/api/get/setting/").
+    fetch("/api/get/setting/").
     then(res => res.json()).
     then(data => {
 
@@ -223,7 +223,7 @@ function set_setting(screen_name, setting_name, value, input)
     let screen_id = screens.value;
 
     // send new screen id to server
-    fetch("http://clock25.local/api/set/setting/", {
+    fetch("/api/set/setting/", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -256,7 +256,7 @@ function set_setting(screen_name, setting_name, value, input)
 function get_time_from_ntp()
 {
     // send request to get time from ntp
-    fetch("http://clock25.local/api/ntp/", {
+    fetch("/api/ntp/", {
         method: "POST",
         mode: "cors"
     }).
@@ -312,7 +312,7 @@ load_settings();
 
 
 
-// fetch("http://clock25.local/api/get/setting/").
+// fetch("/api/get/setting/").
 //     then(res => res.json()).
 //     then(data => {
 //         console.log(data);
@@ -329,7 +329,7 @@ load_settings();
 
 //     counter.innerText = slider.value;
 
-//     fetch("http://clock25.local/api/set/setting/", {
+//     fetch("/api/set/setting/", {
 //         method: "POST",
 //         mode: "no-cors", 
 //         headers: {
