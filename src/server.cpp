@@ -7,6 +7,7 @@
 #include "log.h"
 
 #include <string>
+#include <SD.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
@@ -228,8 +229,14 @@ void setup_http_server()
     MDNS.addService("http", "tcp", SERVER_PORT);
 
     // register main routes
-    server.on("/", server_cb_root);
+    // server.on("/", server_cb_root);
     server.onNotFound(server_cb_404);
+
+    // static file hosting for web interface
+    server.serveStatic("/", FILESYSTEM, "/web/index.html");
+    server.serveStatic("/index.html", FILESYSTEM, "/web/index.html");
+    server.serveStatic("/index.js", FILESYSTEM, "/web/index.js");
+    server.serveStatic("/index.css", FILESYSTEM, "/web/index.css");
 
     // register api routes
     server.on("/api/get/screen/", server_cb_api_screens);
