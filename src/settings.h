@@ -39,6 +39,16 @@ std::vector<std::string> get_settings(const char *screen_name);
 std::vector<std::string> get_screens();
 
 /**
+ * Registers a list of possible values that a setting can have.
+*/
+void set_setting_values(const char *screen_name, const char *setting_name, std::vector<std::string> values);
+
+/**
+ * Returns a list of possible values for a setting (as set by `set_setting_values()`)
+*/
+std::vector<std::string> get_setting_values(const char *screen_name, const char *setting_name);
+
+/**
  * Writes every setting into a JSON document
  * @param doc an existing JSON document to write settings to
 */

@@ -94,6 +94,16 @@ void server_cb_api_settings()
                 JsonObject setting_obj = settings_obj.createNestedObject();
                 setting_obj["name"] = setting;
                 setting_obj["value"] = get_setting(screen.c_str(), setting.c_str(), "");
+
+                // check if setting has values registered to it
+                std::vector<std::string> setting_values = get_setting_values(screen.c_str(), setting.c_str());
+                if (setting_values.size() > 0) {
+                    
+                    // create array
+                    JsonArray values_obj = setting_obj.createNestedArray("values");
+                    for (auto val : setting_values) values_obj.add(val);
+
+                }
             }
         }
     }

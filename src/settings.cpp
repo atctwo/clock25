@@ -10,6 +10,7 @@
 
 // map to hold settings
 std::map< std::string, std::map< std::string, std::string > > settings;
+std::map< std::string, std::map< std::string, std::vector<std::string> > > setting_values;
 
 // struct for callback parameters
 struct callback_params {
@@ -178,10 +179,38 @@ std::vector<std::string> get_screens()
     {
         // add key name to vector
         setting_names.push_back(setting.first.c_str());
-        logi(LOG_TAG, "%s", setting.first.c_str());
+        // logi(LOG_TAG, "%s", setting.first.c_str());
     }
 
     return setting_names;
+}
+
+void set_setting_values(const char *screen_name, const char *setting_name, std::vector<std::string> values)
+{
+    // if screen name is passed as nullptr, use the current screen name
+    const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
+
+    // if the screen is <wifi>, redact the actual value to prevent printing passwords
+    logi(LOG_TAG, "setting setting values %s:%s", screen_name_2, setting_name);
+
+    // set the setting
+    setting_values[screen_name_2][setting_name] = values;
+    // settings.find(screen_name_2)->second.find(setting_name)->second = new_value;
+}
+
+std::vector<std::string> get_setting_values(const char *screen_name, const char *setting_name)
+{
+    // if screen name is passed as nullptr, use the current screen name
+    const char *screen_name_2 = (screen_name == nullptr) ? current_screen_name() : screen_name;
+
+    // if there are no settings for screen name, return default value
+    if      (!settings.count(screen_name_2))               return {};
+
+    // if there are settings for screen name, but none of the specified setting name, return default value
+    else if (!settings[screen_name_2].count(setting_name)) return {};
+
+    // otherwise, return the setting value
+    else return setting_values[screen_name_2][setting_name];
 }
 
 void serialise_settings(StaticJsonDocument<JSON_BUFFER_SIZE> &doc)
