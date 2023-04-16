@@ -204,6 +204,9 @@ void server_cb_api_set_setting()
     // set setting
     set_setting(doc["screen"].as<std::string>().c_str(), doc["setting"].as<std::string>().c_str(), doc["value"].as<std::string>().c_str());
     server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
+
+    // save settings to sd card
+    store_settings(FILESYSTEM);
 }
 
 void server_cb_api_set_options()
