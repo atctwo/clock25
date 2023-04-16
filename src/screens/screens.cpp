@@ -22,7 +22,7 @@ std::vector<ScreenInfo> screens = {
 #endif
 
     {"Digital Clock", make<ClockDigital>, {
-        {"Rainbow Speed", "15"}
+        {"Rainbow Speed", "14000"}
     }, true},
 
     {"GIF Player", make<GIFPlayer>, {

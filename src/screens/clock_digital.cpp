@@ -114,7 +114,7 @@ void ClockDigital::setup(Adafruit_GFX *display)
     canvas_time = new GFXcanvas1(PANEL_RES_X, 20);
 
     // get settings
-    std::string speed = get_setting(nullptr, "Rainbow Speed", "15");
+    std::string speed = get_setting(nullptr, "Rainbow Speed", "14000");
     this->rainbow_speed = std::stoi(speed.c_str());
 }
 
@@ -138,7 +138,7 @@ void ClockDigital::loop()
                 now.hour(),
                 now.minute()
             );
-            drawRainbowBitmap(display, 0, 4, canvas_time->getBuffer(), PANEL_RES_X, 20, 0, ((millis() % 60000) * this->rainbow_speed)/1000);
+            drawRainbowBitmap(display, 0, 4, canvas_time->getBuffer(), PANEL_RES_X, 20, 0, (int)((float)(millis() % this->rainbow_speed) * (360 / (float)this->rainbow_speed)));
 
             // print date
             display->setFont(&VarelaRound_Regular7pt7b);
