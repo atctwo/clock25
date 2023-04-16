@@ -62,6 +62,7 @@ void setup()
     setup_screens();
     register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
     register_setting_callback("<ntp>", "NTP Update Frequency", set_ntp_update_frequency);
+    set_setting_values("<system>", "Cycle Screens", {"0", "1"});
 
     // load settings from sd card
     if (sd_available()) load_settings(SD);
