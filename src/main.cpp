@@ -21,6 +21,7 @@ uint32_t last_random_time = 0;
 
 uint32_t last_ntp_update = 0;
 uint32_t ntp_update_frequency = 0;
+bool enable_automatic_ntp = true;
 
 int next_screen = 0;
 int cycle_screens = 0;
@@ -32,6 +33,11 @@ void set_cycle_screens(std::string new_value) {
 void set_ntp_update_frequency(std::string new_value) {
     last_ntp_update = millis(); // reset ntp timer
     ntp_update_frequency = std::stoi(new_value.c_str());
+}
+
+void set_automatic_ntp_update(std::string new_value)
+{
+    enable_automatic_ntp = std::stoi(new_value.c_str());
 }
 
 void setup()
@@ -62,7 +68,9 @@ void setup()
     setup_screens();
     register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
     register_setting_callback("<ntp>", "NTP Update Frequency", set_ntp_update_frequency);
+    register_setting_callback("<ntp>", "Enable automatic NTP", set_ntp_update_frequency);
     set_setting_values("<system>", "Cycle Screens", {"0", "1"});
+    set_setting_values("<ntp>", "Enable automatic NTP", {"0", "1"});
 
     // load settings from sd card
     if (sd_available()) load_settings(SD);
@@ -115,7 +123,7 @@ void loop()
     }
 
     // ntp update
-    if (ntp_update_frequency != 0) {
+    if (enable_automatic_ntp && ntp_update_frequency != 0) {
         if (millis() - last_ntp_update > ntp_update_frequency) {
             get_time_from_ntp();
             last_ntp_update = millis();
