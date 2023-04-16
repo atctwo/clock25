@@ -119,6 +119,16 @@ select {
     clip-path: polygon(100% 0%, 0 0%, 50% 100%); 
 }
 
+.manual-time-input
+{
+    width: 49%;
+}
+
+.manual-time-input[type="time"]
+{
+    margin-right: 1%;
+}
+
 table
 {
     width: 100%;

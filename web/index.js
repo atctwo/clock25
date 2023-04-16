@@ -149,6 +149,45 @@ function load_settings()
                         contents.appendChild(ntp_button);
                     }
 
+                    // add manual time selection
+                    if (screen.name == "<system>")
+                    {
+                        // create new table row
+                        let row = table.insertRow(-1);
+
+                        // create cell for setting name
+                        let cell_name = row.insertCell(-1);
+                        cell_name.innerText = "Set Time Manually";
+
+                        // create cell for setting value
+                        let cell_value = row.insertCell(-1);
+
+                        let input_time = document.createElement("input");
+                        input_time.type = "time";
+                        input_time.step = "1";
+                        input_time.classList.add("manual-time-input");
+                        cell_value.appendChild(input_time);
+
+                        input_time.addEventListener("change", e => {
+                            set_time(undefined, input_time.value, input_time);
+                        });
+
+                        let input_date = document.createElement("input");
+                        input_date.type = "date";
+                        input_date.classList.add("manual-time-input");
+                        cell_value.appendChild(input_date);
+
+                        input_date.addEventListener("change", e => {
+                            set_time(input_date.value, undefined, input_date);
+                        });
+
+                        // get date and time from clock
+                        fetch("http://clock25.local/api/get/time/").then(res => res.json()).then(data => {
+                            input_time.value = `${String(data.hours).padStart(2, "0")}:${String(data.minutes).padStart(2, "0")}:${String(data.seconds).padStart(2, "0")}`;
+                            input_date.value = `${String(data.year).padStart(4, "0")}-${String(data.month).padStart(2, "0")}-${String(data.day).padStart(2, "0")}`;
+                        });
+                    }
+
                     // add settings to table
                     screen.settings.forEach((setting, j) => {
 
@@ -288,6 +327,62 @@ function get_time_from_ntp()
         if (data.error) {
             console.error("Error getting time from NTP:", data.reason)
             show_error(data.reason);
+        }
+    }).
+    catch(err => {
+        console.log(err);
+        show_error(err);
+    });
+}
+
+function set_time(date=undefined, time=undefined, input)
+{
+    console.log("Setting date and time manually", date, time);
+
+    // initalise variables
+    let hours = -1;
+    let minutes = -1;
+    let seconds = -1;
+    let day = -1;
+    let month = -1;
+    let year = -1;
+
+    // determine values
+    if (time) {
+        let times = time.split(":");
+        hours = times[0];
+        minutes = times[1];
+        seconds = times[2];
+    }
+
+    if (date) {
+        let dates = date.split("-");
+        day = dates[2];
+        month = dates[1];
+        year = dates[0];
+    }
+
+    // send new screen id to server
+    fetch("http://clock25.local/api/set/time/", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            hours, minutes, seconds, day, month, year
+        })
+    }).
+    then(res => res.json()).
+    then(data => {
+        if (data.error) {
+            console.error("Error setting setting:", data.reason)
+            show_error(data.reason);
+        } else {
+
+            // set input field border
+            if (input) input.style.borderColor = "lawngreen";
+
         }
     }).
     catch(err => {
