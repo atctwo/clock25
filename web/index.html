@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>clock25</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+        <div id="ui-container">
+
+            <div id="title-container">
+                <h1 id="title" onclick="title_easter_egg();">clock25 settings</h1>
+            </div>
+
+            <div id="main-container">
+                
+                <div id="error-box">
+                    <p>An error occurred:<br><span id="error-msg"></span></p>
+                </div>
+
+                <details open>
+                    <summary>Current Screen</summary>
+                    <div>
+                        <table>
+                            <tr>
+                                <td>Screen</td>
+                                <td>
+                                    <div class="select-wrapper">
+                                        <select id="select-screens" oninput="set_screen();">
+                                            <option>hello</option>
+                                            <option>world</option>
+                                            <option>eee!!</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </details>
+
+            </div>
+
+            <div id="footer-container">
+                <p>clock25</p>
+            </div>
+
+        </div>
+    </body>
+
+    <script src="index.js"></script>
+</html>

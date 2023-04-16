@@ -1,0 +1,204 @@
+
+*
+{
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+html, body
+{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+details > div
+{
+    border-width: 0px 4px 4px 4px;
+    border-style: solid;
+    border-color: #cdcdcd;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+
+    padding: 10px;
+    padding-top: 20px;
+    margin-top: -10px;
+
+    position: relative;
+    z-index: 10;
+}
+
+summary
+{
+    width: 100%;
+    height: 2.5em;
+    line-height: 2.5em;
+    padding-left: 10px;
+
+    font-size: x-large;
+    border-radius: 15px;
+    background-color: lightseagreen;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+
+    position: relative;
+    z-index: 20;
+}
+
+button
+{
+    font-size: large;
+    border-radius: 10px;
+    margin: 2px;
+    padding: 9px;
+    background-color: lightseagreen;
+    color: white;
+    border: none;
+    user-select: none;
+}
+
+button:hover
+{
+    background-color: rgb(0, 194, 194);
+    cursor: pointer;
+}
+
+button:active
+{
+    background-color: darkcyan;
+}
+
+/*
+    styled select from https://moderncss.dev/custom-select-styles-with-pure-css/
+*/
+
+select {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    padding: 0 1em 0 0;
+    margin: 0;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: inherit;
+    line-height: inherit;
+    outline: none;
+}
+
+.select-wrapper, input
+{
+    padding: 5px;
+    border: 4px solid #cdcdcd;
+    border-radius: 5px;
+    width: 100%;
+    height: 2.5em;
+    font-size: large;
+    background-color: white;
+}
+
+.select-wrapper
+{
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+}
+
+.select-wrapper::after
+{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    right: 0.5em;
+    top: calc(50% - 0.2em);
+    width: 0.8em;
+    height: 0.5em;
+    background-color: black;
+    clip-path: polygon(100% 0%, 0 0%, 50% 100%); 
+}
+
+table
+{
+    width: 100%;
+}
+
+#ui-container
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: rgb(255, 255, 255);
+    overflow: auto;
+
+}
+
+#title-container
+{
+    width: 100%;
+    height: 4em;
+    background-color: darkcyan;
+    color: white;
+    text-align: center;
+
+    position: fixed;
+    z-index: 100;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#footer-container
+{
+    width: 100%;
+    height: 2em;
+    background-color: darkcyan;
+    color: white;
+    text-align: center;
+
+    position: fixed;
+    z-index: 100;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main-container
+{
+    width: 100%;
+    max-width: 600px;
+    /* height: 100%; */
+    flex-grow: 2;
+    /* overflow-y: auto; */
+
+    padding: 20px;
+    margin: 20px;
+    margin-top:    calc(4em + 20px);
+    margin-bottom: calc(2em + 20px);
+    /* overflow: auto; */
+
+    border: 4px solid #cdcdcd;
+    border-radius: 25px;
+    background-color: rgb(230, 230, 230);
+    /* box-shadow: 0px 0px 20px 20px #cdcdcd; */
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+}
+
+#error-box
+{
+    display: none;
+    border: 4px solid red;
+    border-radius: 15px;
+    padding-left: 10px;
+}
