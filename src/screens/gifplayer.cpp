@@ -246,6 +246,35 @@ void load_gif_from_file(std::string default_gif)
 }
 
 
+void set_setting_values_to_gifs()
+{
+    logi(LOG_TAG, "Determining list of gif paths for setting values");
+
+    // create vector to store paths
+    std::vector<std::string> gif_paths;
+
+    // iterate over files in directory
+    File root = FILESYSTEM.open("/gifs");
+    File file = root.openNextFile();
+    while(file) {
+
+        // if file isn't a directory
+        if (!file.isDirectory())
+        {
+            // add filename to vector
+            std::string filename = "/gifs/";
+            filename += file.name();
+            gif_paths.push_back(filename);
+        }
+
+        // check next file
+        file = root.openNextFile();
+    }
+
+    // set setting values
+    set_setting_values("GIF Player", "GIF File", gif_paths);
+}
+
 
 
 void GIFPlayer::setup(Adafruit_GFX *display)
@@ -259,6 +288,9 @@ void GIFPlayer::setup(Adafruit_GFX *display)
     // load gif
     this->display->fillScreen(0);
     load_gif_from_file(this->current_gif_path);
+
+    // determine setting values
+    set_setting_values_to_gifs();
 }
 
 void GIFPlayer::loop()
