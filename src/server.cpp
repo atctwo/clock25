@@ -1,5 +1,6 @@
 #include "server.h"
 #include "wifi.h"
+#include "ntp.h"
 #include "screens/screens.h"
 #include "settings.h"
 #include "pins.h"
@@ -211,6 +212,12 @@ void server_cb_api_set_options()
     server.send(200, "text/plain", "");
 }
 
+void server_cb_api_ntp()
+{
+    get_time_from_ntp();
+    server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
+}
+
 
 void setup_http_server()
 {
@@ -231,6 +238,8 @@ void setup_http_server()
     server.on("/api/set/screen/", HTTP_OPTIONS, server_cb_api_set_options);
     server.on("/api/set/setting/", HTTP_POST, server_cb_api_set_setting);
     server.on("/api/set/setting/", HTTP_OPTIONS, server_cb_api_set_options);
+    server.on("/api/ntp/", HTTP_POST, server_cb_api_ntp);
+    server.on("/api/ntp/", HTTP_OPTIONS, server_cb_api_set_options);
 }
 
 void server_handle_client()
