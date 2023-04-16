@@ -55,6 +55,13 @@ void server_cb_api_screens()
         arr.add(screen.name);
     }
 
+    // store current screen
+    root["current"] = current_screen_id;
+
+    // add error info
+    root["error"] = false;
+    root["reason"] = "";
+
     // serialise json
     std::string output = "";
     serializeJsonPretty(doc, output);
@@ -91,6 +98,10 @@ void server_cb_api_settings()
         }
     }
 
+    // add error info
+    root["error"] = false;
+    root["reason"] = "";
+
     // serialise json
     std::string output = "";
     serializeJsonPretty(doc, output);
@@ -125,7 +136,7 @@ void server_cb_api_set_screen()
     }
 
     // check if screen is numeric
-    const char* str_screen = doc["screen"].as<const char*>();
+    std::string str_screen = doc["screen"].as<std::string>();
     if (!is_number(str_screen)) {
         server.send(400, "application/json", "{\"error\": true, \"reason\": \"Screen parameter is non-numeric\"}");
         return;
@@ -140,7 +151,7 @@ void server_cb_api_set_screen()
         server.send(400, "application/json", "{\"error\": true, \"reason\": \"Invalid screen ID\"}");
         return;
     } else {
-        server.send(400, "application/json", "{\"error\": false, \"reason\": \"\"}");
+        server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
         return;
     }
 }
@@ -179,10 +190,16 @@ void server_cb_api_set_setting()
     }
 
     // set setting
-    set_setting(doc["screen"].as<const char*>(), doc["setting"].as<const char*>(), doc["value"].as<const char*>());
-    server.send(200, "application/json", "{'error': false, 'reason': ''}");
+    set_setting(doc["screen"].as<std::string>().c_str(), doc["setting"].as<std::string>().c_str(), doc["value"].as<std::string>().c_str());
+    server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
 }
 
+void server_cb_api_set_options()
+{
+    // CORS is so complicated!!!!  who came up with it?
+    // this api route is just to deal with CORS preflights that chrome sends
+    server.send(200, "text/plain", "");
+}
 
 
 void setup_http_server()
@@ -201,7 +218,9 @@ void setup_http_server()
     server.on("/api/get/screen/", server_cb_api_screens);
     server.on("/api/get/setting/", server_cb_api_settings);
     server.on("/api/set/screen/", HTTP_POST, server_cb_api_set_screen);
+    server.on("/api/set/screen/", HTTP_OPTIONS, server_cb_api_set_options);
     server.on("/api/set/setting/", HTTP_POST, server_cb_api_set_setting);
+    server.on("/api/set/setting/", HTTP_OPTIONS, server_cb_api_set_options);
 }
 
 void server_handle_client()
