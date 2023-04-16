@@ -1,6 +1,7 @@
 #include "server.h"
 #include "wifi.h"
 #include "ntp.h"
+#include "rtc.h"
 #include "screens/screens.h"
 #include "settings.h"
 #include "pins.h"
@@ -222,6 +223,109 @@ void server_cb_api_ntp()
     server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
 }
 
+void server_cb_api_get_time()
+{
+    // create json object
+    StaticJsonDocument<JSON_BUFFER_SIZE> doc;
+    JsonObject root = doc.to<JsonObject>();
+
+    // add time
+    DateTime now = get_rtc_time();
+    root["day"] = now.day();
+    root["month"] = now.month();
+    root["year"] = now.year();
+    root["hours"] = now.hour();
+    root["minutes"] = now.minute();
+    root["seconds"] = now.second();
+
+    // add error info
+    root["error"] = false;
+    root["reason"] = "";
+
+    // serialise json
+    std::string output = "";
+    serializeJsonPretty(doc, output);
+
+    // return object
+    server.send(200, "application/json", output.c_str());
+}
+
+void server_cb_api_set_time()
+{
+    // check for data in the plain parameter
+    if (!server.hasArg("plain")) {
+        server.send(400, "application/json", "{\"error\": true, \"reason\": \"Missing parameters\"}");
+        return;
+    }
+
+    // get request parameters
+    StaticJsonDocument<JSON_BUFFER_SIZE> doc;
+    deserializeJson(doc, server.arg("plain"));
+
+    for (uint8_t i = 0; i < server.args(); i++) {
+        logi(LOG_TAG, "%s=%s", server.argName(i).c_str(), server.arg(i).c_str());
+    }
+
+    // get current time
+    DateTime now = get_rtc_time();
+    int current_hours = now.hour();
+    int current_minutes = now.minute();
+    int current_seconds = now.second();
+    int current_day = now.day();
+    int current_month = now.month();
+    int current_year = now.year();
+
+    // get time from parameters
+    if (doc.containsKey("hours")) {
+        std::string str_hours = doc["hours"].as<std::string>();
+        if (is_number(str_hours)) {
+            int hours = std::stoi(str_hours);
+            if (hours > -1) current_hours = hours;
+        }
+    }
+    if (doc.containsKey("minutes")) {
+        std::string str_minutes = doc["minutes"].as<std::string>();
+        if (is_number(str_minutes)) {
+            int minutes = std::stoi(str_minutes);
+            if (minutes > -1) current_minutes = minutes;
+        }
+    }
+    if (doc.containsKey("seconds")) {
+        std::string str_seconds = doc["seconds"].as<std::string>();
+        if (is_number(str_seconds)) {
+            int seconds = std::stoi(str_seconds);
+            if (seconds > -1) current_seconds = seconds;
+        }
+    }
+    if (doc.containsKey("day")) {
+        std::string str_day = doc["day"].as<std::string>();
+        if (is_number(str_day)) {
+            int day = std::stoi(str_day);
+            if (day > -1) current_day = day;
+        }
+    }
+    if (doc.containsKey("month")) {
+        std::string str_month = doc["month"].as<std::string>();
+        if (is_number(str_month)) {
+            int month = std::stoi(str_month);
+            if (month > -1) current_month = month;
+        }
+    }
+    if (doc.containsKey("year")) {
+        std::string str_year = doc["year"].as<std::string>();
+        if (is_number(str_year)) {
+            int year = std::stoi(str_year);
+            if (year > -1) current_year = year;
+        }
+    }
+
+    // set time
+    DateTime thingy(current_year, current_month, current_day, current_hours, current_minutes, current_seconds);
+    set_rtc_time(thingy);
+
+    server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
+}
+
 
 void setup_http_server()
 {
@@ -251,6 +355,9 @@ void setup_http_server()
     server.on("/api/set/setting/", HTTP_OPTIONS, server_cb_api_set_options);
     server.on("/api/ntp/", HTTP_POST, server_cb_api_ntp);
     server.on("/api/ntp/", HTTP_OPTIONS, server_cb_api_set_options);
+    server.on("/api/get/time/", HTTP_GET, server_cb_api_get_time);
+    server.on("/api/set/time/", HTTP_POST, server_cb_api_set_time);
+    server.on("/api/set/time/", HTTP_OPTIONS, server_cb_api_set_options);
 }
 
 void server_handle_client()
