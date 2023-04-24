@@ -99,10 +99,11 @@ void next_screen()
     }
 
     // clear screen and reset font
-    display->fillScreen(0);
-    display->setTextColor(0xffff, 0);
-    display->setCursor(0, 0);
-    display->setFont(NULL);
+    logi(LOG_TAG, "ugh");
+    canvas.fillScreen(0);
+    canvas.setTextColor(0xffff, 0);
+    canvas.setCursor(0, 0);
+    canvas.setFont(NULL);
 
     // instantiate new screen
     current_screen = screens[next_screen_id].creator();
