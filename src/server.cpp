@@ -4,6 +4,7 @@
 #include "rtc.h"
 #include "screens/screens.h"
 #include "settings.h"
+#include "utility.h"
 #include "pins.h"
 #include "log.h"
 
@@ -18,14 +19,6 @@
 #define SERVER_PORT 80
 
 WebServer server(SERVER_PORT);
-
-// from https://stackoverflow.com/a/4654718
-bool is_number(const std::string& s)
-{
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
-}
 
 void server_cb_404()
 {
