@@ -11,6 +11,7 @@
 
 // buffer size for ArduinoJson
 #define JSON_BUFFER_SIZE 2048
+#define JSON_DYNAMIC_BUFFER_SIZE 24576
 #define SETTINGS_FILE "/settings.json"
 
 // I2C pins

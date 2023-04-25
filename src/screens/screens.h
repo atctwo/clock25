@@ -9,6 +9,7 @@ hmm
 #include <vector>
 #include <string>
 #include <Adafruit_GFX.h>
+#include <ArduinoJson.h>
 #include "pins.h"
 
 
@@ -103,6 +104,21 @@ class GIFPlayer: public ScreenBase {
     private:
         Adafruit_GFX *display;
         const char *current_gif_path;
+};
+
+class WeatherForecast: public ScreenBase {
+    public:
+        void setup(Adafruit_GFX *display);
+        void loop();
+        void finish();
+        void setting_update(const char* setting, const char *new_setting);
+        void get_forecast();
+        void show_message(const char *msg, const char *title="Forecast", bool newline=false);
+    private:
+        Adafruit_GFX *display;
+        uint8_t status;
+        DynamicJsonDocument *doc;
+        bool doc_allocated;
 };
 
 

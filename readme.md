@@ -15,3 +15,7 @@ a funky digital clock made out of an esp32 and an rgb matrix!  this is a work in
 ## building
 
 the code is made using platformio, and is heavily targeted for the esp32.  it's also designed with specific hardware in mind, but the in-code interface tries to be hardware-agnostic so that hardware changes are easier to make.
+
+## credits
+- Image loading using [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) by nothings
+- Weather icons by [Royyan Wijaya](https://www.flaticon.com/packs/weather-1050)

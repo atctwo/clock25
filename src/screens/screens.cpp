@@ -27,6 +27,9 @@ std::vector<ScreenInfo> screens = {
 
     {"GIF Player", make<GIFPlayer>, {
         {"GIF File", "/gifs/katamari.gif"}
+    }, false},
+
+    {"Weather Forecast", make<WeatherForecast>, {
     }, false}
 
 };
@@ -99,7 +102,6 @@ void next_screen()
     }
 
     // clear screen and reset font
-    logi(LOG_TAG, "ugh");
     canvas.fillScreen(0);
     canvas.setTextColor(0xffff, 0);
     canvas.setCursor(0, 0);
