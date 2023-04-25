@@ -2,6 +2,7 @@
 #include "rtc.h"
 #include "settings.h"
 #include "screens.h"
+#include "utility.h"
 #include "log.h"
 
 #include <string>
@@ -48,68 +49,6 @@ uint16_t wifi_colour_active = 0xffff;
 uint16_t wifi_colour_inactive = 0x52AA;
 
 
-
-// convert a 24 bit colour (RGB888) to a 16 bit colour (RGB565)
-// https://afterthoughtsoftware.com/posts/convert-rgb888-to-rgb565
-uint16_t rgb888torgb565(uint8_t red, uint8_t green, uint8_t blue)
-{
-    uint16_t b = (blue >> 3) & 0x1f;
-    uint16_t g = ((green >> 2) & 0x3f) << 5;
-    uint16_t r = ((red >> 3) & 0x1f) << 11;
-
-    return (uint16_t) (r | g | b);
-}
-
-// convert a colour in HSV space to RGB
-// from https://www.cs.rit.edu/~ncs/color/t_convert.html#RGB%20to%20HSV%20&%20HSV%20to%20RGB
-void HSVtoRGB( float *r, float *g, float *b, float h, float s, float v )
-{
-    int i;
-    float f, p, q, t;
-    if( s == 0 ) {
-        // achromatic (grey)
-        *r = *g = *b = v;
-        return;
-    }
-    h /= 60;			// sector 0 to 5
-    i = floor( h );
-    f = h - i;			// factorial part of h
-    p = v * ( 1 - s );
-    q = v * ( 1 - s * f );
-    t = v * ( 1 - s * ( 1 - f ) );
-    switch( i ) {
-        case 0:
-            *r = v;
-            *g = t;
-            *b = p;
-            break;
-        case 1:
-            *r = q;
-            *g = v;
-            *b = p;
-            break;
-        case 2:
-            *r = p;
-            *g = v;
-            *b = t;
-            break;
-        case 3:
-            *r = p;
-            *g = q;
-            *b = v;
-            break;
-        case 4:
-            *r = t;
-            *g = p;
-            *b = v;
-            break;
-        default:		// case 5:
-            *r = v;
-            *g = p;
-            *b = q;
-            break;
-    }
-}
 
 void drawRainbowBitmap(Adafruit_GFX *display, int16_t x, int16_t y,
   const uint8_t bitmap[], int16_t w, int16_t h,
