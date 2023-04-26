@@ -156,3 +156,15 @@ const char *current_screen_name()
 {
     return current_screen ? screens[current_screen_id].name : "No screen loaded";
 }
+
+std::vector<std::string> get_screen_names()
+{
+    std::vector<std::string> names;
+
+    for (ScreenInfo screen : screens)
+    {
+        names.push_back(screen.name);
+    }
+
+    return names;
+}

@@ -168,6 +168,7 @@ void setup_screens();
 bool switch_screen(int new_screen_id);
 void update_screen(Adafruit_GFX *display);
 const char *current_screen_name();
+std::vector<std::string> get_screen_names();
 
 
 #endif /* CLOCK_SCREENS_H */
