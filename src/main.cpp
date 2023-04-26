@@ -25,7 +25,7 @@ uint32_t ntp_update_frequency = 0;
 bool enable_automatic_ntp = true;
 
 uint32_t last_gesture_check = 0;
-uint32_t gesture_check_frequency = 500;
+uint32_t gesture_check_frequency = 0;
 
 int next_screen = 0;
 int cycle_screens = 0;

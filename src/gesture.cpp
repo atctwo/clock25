@@ -25,8 +25,8 @@ bool setup_gesture()
     } else {
         apds.enableProximity(true);
         apds.enableGesture(true);
-        // apds.setGestureProximityThreshold(2);
-        apds.setGestureGain(APDS9960_GGAIN_8);
+        // apds.setGestureProximityThreshold(25);
+        // apds.setGestureGain(APDS9960_GGAIN_8);
         gesture_setup = true;
     }
 
