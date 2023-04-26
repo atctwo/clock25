@@ -146,6 +146,7 @@ struct ScreenInfo {
     ScreenCreator creator;                  // creator function to create an instance of the screen's class
     std::vector<ScreenSettings> settings;   // what settings the screen has
     bool clear_buffer;                      // whether to clear the framebuffer before each frame
+    bool enable_gesture;                    // whether to enable gesture screen thingy
 };
 
 // static ScreenCreator adfewsghtrkuy[] = {make<ScreenTest>};

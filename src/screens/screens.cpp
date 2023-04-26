@@ -14,23 +14,23 @@
 std::vector<ScreenInfo> screens = {
 
 #ifdef INCLUDE_TEST_SCREENS
-    {"TestScreen", make<ScreenTest>, {}, true},
-    {"Test B", make<ScreenTestB>, {}, true},
-    {"Brightness", make<BrightnessTest>, {}, true},
-    {"Sensors", make<SensorTest>, {}, true},
-    {"SD Test", make<SDTest>, {}, true},
+    {"TestScreen", make<ScreenTest>, {}, true, true},
+    {"Test B", make<ScreenTestB>, {}, true, true},
+    {"Brightness", make<BrightnessTest>, {}, true, true},
+    {"Sensors", make<SensorTest>, {}, true, true},
+    {"SD Test", make<SDTest>, {}, true, true},
 #endif
 
     {"Digital Clock", make<ClockDigital>, {
         {"Rainbow Speed", "14000"}
-    }, true},
+    }, true, true},
 
     {"GIF Player", make<GIFPlayer>, {
         {"GIF File", "/gifs/katamari.gif"}
-    }, false},
+    }, false, false},
 
     {"Weather Forecast", make<WeatherForecast>, {
-    }, false}
+    }, false, true}
 
 };
 

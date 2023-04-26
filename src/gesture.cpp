@@ -41,33 +41,39 @@ void check_gesture()
 {
     if (gesture_setup)
     {
-        uint8_t gesture = apds.readGesture();
-        if (gesture == APDS9960_UP)    logi(LOG_TAG, "up!");
-        if (gesture == APDS9960_DOWN)  logi(LOG_TAG, "down!");
-        if (gesture == APDS9960_LEFT)  logi(LOG_TAG, "left!");
-        if (gesture == APDS9960_RIGHT) logi(LOG_TAG, "right!");
-
-        if (gesture == APDS9960_LEFT || gesture == APDS9960_RIGHT)
+        // if gesture detection is enabled for this state
+        if (screens[current_screen_id].enable_gesture)
         {
-            // get gesture settings
-            std::vector<std::string> screen_names = get_screen_names();
-            std::vector<std::string>::iterator alt_screen_it = std::find(screen_names.begin(), screen_names.end(), get_setting("<system>", "Gesture Alt Screen", "Weather Forecast"));
-            int alt_screen = (alt_screen_it != screen_names.end()) ? (alt_screen_it - screen_names.begin()) : 0; // cursed
-            
-            std::string str_gesture_enabled = get_setting("<system>", "Gesture Enabled", "1");
-            bool gesture_enabled = true;
-            if (is_number(str_gesture_enabled))  gesture_enabled = std::stoi(str_gesture_enabled);
 
-            // switch screen
-            if (gesture_enabled)
+            uint8_t gesture = apds.readGesture();
+            if (gesture == APDS9960_UP)    logi(LOG_TAG, "up!");
+            if (gesture == APDS9960_DOWN)  logi(LOG_TAG, "down!");
+            if (gesture == APDS9960_LEFT)  logi(LOG_TAG, "left!");
+            if (gesture == APDS9960_RIGHT) logi(LOG_TAG, "right!");
+
+            if (gesture == APDS9960_LEFT || gesture == APDS9960_RIGHT)
             {
-                if (current_screen_id != alt_screen) {
-                    previous_state = current_screen_id;
-                    switch_screen(alt_screen);
-                } else {
-                    switch_screen(previous_state);
+                // get gesture settings
+                std::vector<std::string> screen_names = get_screen_names();
+                std::vector<std::string>::iterator alt_screen_it = std::find(screen_names.begin(), screen_names.end(), get_setting("<system>", "Gesture Alt Screen", "Weather Forecast"));
+                int alt_screen = (alt_screen_it != screen_names.end()) ? (alt_screen_it - screen_names.begin()) : 0; // cursed
+                
+                std::string str_gesture_enabled = get_setting("<system>", "Gesture Enabled", "1");
+                bool gesture_enabled = true;
+                if (is_number(str_gesture_enabled))  gesture_enabled = std::stoi(str_gesture_enabled);
+
+                // switch screen
+                if (gesture_enabled)
+                {
+                    if (current_screen_id != alt_screen) {
+                        previous_state = current_screen_id;
+                        switch_screen(alt_screen);
+                    } else {
+                        switch_screen(previous_state);
+                    }
                 }
             }
+
         }
     }
 }
