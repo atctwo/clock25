@@ -4,6 +4,7 @@
 #include "brightness.h"
 #include "sensors.h"
 #include "rtc.h"
+#include "gesture.h"
 #include "settings.h"
 #include "sd.h"
 #include "wifi.h"
@@ -22,6 +23,9 @@ uint32_t last_random_time = 0;
 uint32_t last_ntp_update = 0;
 uint32_t ntp_update_frequency = 0;
 bool enable_automatic_ntp = true;
+
+uint32_t last_gesture_check = 0;
+uint32_t gesture_check_frequency = 500;
 
 int next_screen = 0;
 int cycle_screens = 0;
@@ -71,6 +75,9 @@ void setup()
     register_setting_callback("<ntp>", "Enable automatic NTP", set_ntp_update_frequency);
     set_setting_values("<system>", "Cycle Screens", {"0", "1"});
     set_setting_values("<ntp>", "Enable automatic NTP", {"0", "1"});
+
+    // setup gesture (after screens so it can use screens to set setting values)
+    setup_gesture();
 
     // load settings from sd card
     if (sd_available()) load_settings(SD);
@@ -128,6 +135,13 @@ void loop()
             get_time_from_ntp();
             last_ntp_update = millis();
         }
+    }
+
+    // check gesture
+    if (millis() - last_gesture_check > gesture_check_frequency)
+    {
+        check_gesture();
+        last_gesture_check = millis();
     }
 
     // randomise rainbow speed
