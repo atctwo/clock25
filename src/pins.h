@@ -14,6 +14,12 @@
 #define JSON_DYNAMIC_BUFFER_SIZE 24576
 #define SETTINGS_FILE "/settings.json"
 
+// buttons
+#define BTN_HOUR 13
+#define BTN_MINUTE 14
+#define BTN_SCREEN 21
+#define BTN_REVERSE 47
+
 // I2C pins
 #define SDA_PIN 12
 #define SCL_PIN 11

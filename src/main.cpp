@@ -3,6 +3,7 @@
 #include "display.h"
 #include "brightness.h"
 #include "sensors.h"
+#include "button.h"
 #include "rtc.h"
 #include "gesture.h"
 #include "settings.h"
@@ -78,6 +79,7 @@ void setup()
     // setup display and peripherals
     setup_display();
     setup_brightness();
+    setup_buttons();
     setup_sensors();
     setup_rtc();
     setup_sd();
@@ -162,6 +164,9 @@ void loop()
         check_gesture();
         last_gesture_check = millis();
     }
+
+    // check buttons
+    check_buttons();
 
     // randomise rainbow speed
     // if (millis() - last_random_time > 2500)
