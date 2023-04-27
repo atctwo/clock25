@@ -19,6 +19,8 @@
 uint32_t last_switch_time = 0;
 uint32_t last_brightness_time = 0;
 uint32_t last_random_time = 0;
+bool screen_blanked = 0;
+uint8_t last_brightness = get_brightness();
 
 uint32_t last_ntp_update = 0;
 uint32_t ntp_update_frequency = 0;
@@ -42,6 +44,18 @@ void set_ntp_update_frequency(std::string new_value) {
 void set_automatic_ntp_update(std::string new_value)
 {
     enable_automatic_ntp = std::stoi(new_value.c_str());
+}
+
+void set_screen_blanked(std::string new_value)
+{
+    screen_blanked = std::stoi(new_value);
+
+    if (screen_blanked) {
+        last_brightness = get_brightness();
+        set_display_brightness(1);
+    } else {
+        set_display_brightness(last_brightness);
+    }
 }
 
 void setup()
@@ -71,9 +85,11 @@ void setup()
     // setup screen subsystem and settings
     setup_screens();
     register_setting_callback("<system>", "Cycle Screens", set_cycle_screens);
+    register_setting_callback("<system>", "Blank Screen", set_screen_blanked);
     register_setting_callback("<ntp>", "NTP Update Frequency", set_ntp_update_frequency);
     register_setting_callback("<ntp>", "Enable automatic NTP", set_ntp_update_frequency);
     set_setting_values("<system>", "Cycle Screens", {"0", "1"});
+    set_setting_values("<system>", "Blank Screen", {"0", "1"});
     set_setting_values("<ntp>", "Enable automatic NTP", {"0", "1"});
 
     // setup gesture (after screens so it can use screens to set setting values)
@@ -94,7 +110,7 @@ void setup()
 
     // start!
     switch_screen(0);
-    set_display_brightness(255);
+    set_display_brightness(128);
 }
 
 void loop()
@@ -120,13 +136,16 @@ void loop()
     }
 
     // update brightness
-    if (millis() - last_brightness_time > 500) {
-        if (brightness_available()) {
+    if (!screen_blanked)
+    {
+        if (millis() - last_brightness_time > 500) {
+            if (brightness_available()) {
 
-            set_display_brightness(get_brightness());
-            last_brightness_time = millis();
+                set_display_brightness(get_brightness());
+                last_brightness_time = millis();
 
-        } else set_display_brightness(128);
+            } else set_display_brightness(128);
+        }
     }
 
     // ntp update

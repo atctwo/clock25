@@ -91,6 +91,8 @@ bool switch_screen(int new_screen_id)
 
 void next_screen()
 {
+    logi(LOG_TAG, "switching!");
+
     // if there is already a screen running
     if (current_screen)
     {
@@ -142,7 +144,7 @@ void update_screen(Adafruit_GFX *display)
     // and that the switching screen flag isn't already set
     if (next_screen_id != -1 && !switching_screen)
     {
-        logi(LOG_TAG, "switching screen to screen %d", next_screen_id);
+        logi(LOG_TAG, "beginning switch to screen %d", next_screen_id);
 
         // set the switching screen flag
         switching_screen = true;
