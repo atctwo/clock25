@@ -149,10 +149,16 @@ function load_settings()
                         contents.appendChild(ntp_button);
                     }
 
-                    // add manual time selection
+                    // add manual time selection and remount sd button
                     if (screen.name == "<system>")
                     {
-                        // create new table row
+                        // create remount sd card button
+                        let sd_button = document.createElement("button");
+                        sd_button.innerText = "Remount SD card";
+                        sd_button.onclick = remount_sd;
+                        contents.appendChild(sd_button);
+
+                        // create new table row for manual time selection
                         let row = table.insertRow(-1);
 
                         // create cell for setting name
@@ -335,6 +341,25 @@ function get_time_from_ntp()
     });
 }
 
+function remount_sd()
+{
+    // send request to remount sd
+    fetch("http://clock25.local/api/sd/").
+    then(res => res.json()).
+    then(data => {
+        if (data.error) {
+            console.error("Error remounting SD:", data.reason)
+            show_error(data.reason);
+        } else {
+            show_error("Since this may have updated the values for some settings, it is recommended that you reload the page.", "Successfully remounted SD card.", "darkcyan");
+        }
+    }).
+    catch(err => {
+        console.log(err);
+        show_error(err);
+    });
+}
+
 function set_time(date=undefined, time=undefined, input)
 {
     console.log("Setting date and time manually", date, time);
@@ -398,17 +423,20 @@ function show_main_container()
 }
 
 
-function show_error(msg)
+function show_error(msg, title="An error occurred:", border_colour="red")
 {
     // get error element
     let err = document.getElementById("error-box");
     let eee = document.getElementById("error-msg");
+    let error_title = document.getElementById("error-title");
 
     // set error message
+    error_title.innerText = title;
     eee.innerText = msg;
 
     // show error message
     err.style.display = "block";
+    err.style.borderColor = border_colour;
 }
 
 

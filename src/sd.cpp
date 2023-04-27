@@ -12,6 +12,8 @@ bool setup_sd()
 {
     logi(LOG_TAG, "setting up sd card");
 
+    if (is_sd_setup) SD.end();
+
     // logi(LOG_TAG, "starting spi");
     // spi.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SPI_SD_CS);
 

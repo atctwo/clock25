@@ -1,5 +1,6 @@
 #include "server.h"
 #include "wifi.h"
+#include "sd.h"
 #include "ntp.h"
 #include "rtc.h"
 #include "screens/screens.h"
@@ -216,6 +217,17 @@ void server_cb_api_ntp()
     server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
 }
 
+void sever_cb_api_remount_sd()
+{
+    logi(LOG_TAG, "remounting sd card");
+    if (setup_sd())
+    {
+        load_settings(SD);
+        server.send(200, "application/json", "{\"error\": false, \"reason\": \"\"}");
+    }
+    else server.send(400, "application/json", "{\"error\": true, \"reason\": \"Unable to mount SD card\"}");
+}
+
 void server_cb_api_get_time()
 {
     // create json object
@@ -351,6 +363,7 @@ void setup_http_server()
     server.on("/api/get/time/", HTTP_GET, server_cb_api_get_time);
     server.on("/api/set/time/", HTTP_POST, server_cb_api_set_time);
     server.on("/api/set/time/", HTTP_OPTIONS, server_cb_api_set_options);
+    server.on("/api/sd/", HTTP_GET, sever_cb_api_remount_sd);
 }
 
 void server_handle_client()
