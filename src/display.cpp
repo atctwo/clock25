@@ -79,8 +79,13 @@ uint8_t get_display_brightness() { return display_brightness; }
 
 void fade_display(uint8_t target, std::function<void()> callback, uint16_t fade_time, bool fade_out_in)
 {
-    // if brightness is at target, return
-    if (current_brightness == target) return;
+    // logi(LOG_TAG, "fade_display target=%d current=%d", target, current_brightness);
+
+    // if brightness is at target, call the callback and return
+    if (current_brightness == target) {
+        if (callback) callback();
+        return;
+    }
 
     // determine fade direction
     if (current_brightness > target) fade_active = 1; // fade out
