@@ -1,0 +1,10 @@
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 405:Plugin executed on: 'linux'
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 406:Plugin executed with python version: '3.10.10 (main, Mar  5 2023, 22:26:53) [GCC 12.2.1 20230201]'
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 407:KiCad build version: 7.0.1
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 408:Plugin version: 2.0.3
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 409:Frame repr: <wx._core.Frame object at 0x7f00253dedd0>
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.place_footprints 121:getting a list of all footprints on board
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.place_footprints 140:Footprint REF** does not have Sheetfile property, it will not be considered for placement. Most likely it is only in layout
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.place_footprints 140:Footprint REF** does not have Sheetfile property, it will not be considered for placement. Most likely it is only in layout
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.place_footprints 140:Footprint REF** does not have Sheetfile property, it will not be considered for placement. Most likely it is only in layout
+04-28 15:06:41 com_github_MitjaNemec_PlaceFootprints.place_footprints 140:Footprint REF** does not have Sheetfile property, it will not be considered for placement. Most likely it is only in layout
