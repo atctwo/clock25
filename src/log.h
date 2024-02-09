@@ -8,7 +8,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define LOG_OUTPUT USBSerial
+// #define LOG_OUTPUT USBSerial
+#define LOG_OUTPUT Serial
 
 #define logd(tag, fmt, ...) (void) 0;
 // #define logd(tag, fmt, ...) LOG_OUTPUT.printf("[%s] " fmt "\n", tag, ## __VA_ARGS__)
