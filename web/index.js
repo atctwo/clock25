@@ -195,66 +195,69 @@ function load_settings()
                     }
 
                     // add settings to table
-                    screen.settings.forEach((setting, j) => {
+                    if ("settings" in screen) {
+                        screen.settings.forEach((setting, j) => {
 
-                        // create new table row
-                        let row = table.insertRow(-1);
+                            // create new table row
+                            let row = table.insertRow(-1);
 
-                        // create cell for setting name
-                        let cell_name = row.insertCell(-1);
-                        cell_name.innerText = setting.name;
+                            // create cell for setting name
+                            let cell_name = row.insertCell(-1);
+                            cell_name.innerText = setting.name;
 
-                        // create cell for setting value
-                        let cell_value = row.insertCell(-1);
-                        let setting_input;
+                            // create cell for setting value
+                            let cell_value = row.insertCell(-1);
+                            let setting_input;
 
-                        // if there are no pre-determined values, use a regular input
-                        if (!("values" in setting))
-                        {
-                            setting_input = document.createElement("input");
-                            setting_input.value = setting.value;
-                            if (!isNaN(setting.value)) setting_input.type = "number";   // if value is numeric, set the input type to be number
-                            cell_value.appendChild(setting_input);
-                        }
-                        else // otherwise, use a <select> tag
-                        {
-                            // create select wrapper
-                            let select_wrapper = document.createElement("div");
-                            select_wrapper.classList.add("select-wrapper");
+                            // if there are no pre-determined values, use a regular input
+                            if (!("values" in setting))
+                            {
+                                setting_input = document.createElement("input");
+                                setting_input.value = setting.value;
+                                if (!isNaN(setting.value)) setting_input.type = "number";   // if value is numeric, set the input type to be number
+                                cell_value.appendChild(setting_input);
+                            }
+                            else // otherwise, use a <select> tag
+                            {
+                                // create select wrapper
+                                let select_wrapper = document.createElement("div");
+                                select_wrapper.classList.add("select-wrapper");
 
-                            // create select
-                            setting_input = document.createElement("select");
+                                // create select
+                                setting_input = document.createElement("select");
 
-                            // add options
-                            setting.values.forEach(val => {
+                                // add options
+                                setting.values.forEach(val => {
 
-                                // create option
-                                var opt = document.createElement("option");
+                                    // create option
+                                    var opt = document.createElement("option");
 
-                                // set opt name and value
-                                opt.innerText = val;
-                                opt.value = val;
+                                    // set opt name and value
+                                    opt.innerText = val;
+                                    opt.value = val;
 
-                                // add option to select
-                                setting_input.appendChild(opt);
+                                    // add option to select
+                                    setting_input.appendChild(opt);
 
+                                });
+
+                                // select current value
+                                setting_input.value = setting.value;
+
+                                // add to document
+                                select_wrapper.appendChild(setting_input);
+                                cell_value.appendChild(select_wrapper);
+                            }
+
+                            // input element oninput
+                            setting_input.addEventListener("change", e => {
+                                console.log(`New value for ${screen.name}:${setting.name}: ${setting_input.value}`);
+                                set_setting(screen.name, setting.name, setting_input.value, setting_input)
                             });
 
-                            // select current value
-                            setting_input.value = setting.value;
-
-                            // add to document
-                            select_wrapper.appendChild(setting_input);
-                            cell_value.appendChild(select_wrapper);
-                        }
-
-                        // input element oninput
-                        setting_input.addEventListener("change", e => {
-                            console.log(`New value for ${screen.name}:${setting.name}: ${setting_input.value}`);
-                            set_setting(screen.name, setting.name, setting_input.value, setting_input)
                         });
-
-                    });
+                    }
+                    else console.warn("No settings object for screen", screen.name);
 
                     // add summary and contents to details
                     contents.appendChild(table);
