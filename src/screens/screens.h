@@ -51,6 +51,17 @@ class ScreenTestB : public ScreenBase {
         Adafruit_GFX *display;
 };
 
+class PanelTest : public ScreenBase {
+    public:
+        void setup(Adafruit_GFX *display);
+        void loop();
+        void finish();
+        void setting_update(const char* setting, const char *new_setting);
+    private:
+        void setPanelColour(const char *new_colour);
+        Adafruit_GFX *display;
+};
+
 class BrightnessTest: public ScreenBase {
     public:
         void setup(Adafruit_GFX *display);

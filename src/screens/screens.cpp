@@ -16,6 +16,9 @@ std::vector<ScreenInfo> screens = {
 #ifdef INCLUDE_TEST_SCREENS
     {"TestScreen", make<ScreenTest>, {}, true, true},
     {"Test B", make<ScreenTestB>, {}, true, true},
+    {"Panel Test", make<PanelTest>, {
+        {"Panel Colour", "00ced1"}
+    }, false, true},
     {"Brightness", make<BrightnessTest>, {}, true, true},
     {"Sensors", make<SensorTest>, {}, true, true},
     {"SD Test", make<SDTest>, {}, true, true},
