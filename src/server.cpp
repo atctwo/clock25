@@ -73,6 +73,10 @@ void server_cb_api_settings()
     StaticJsonDocument<JSON_BUFFER_SIZE> doc;
     JsonObject root = doc.to<JsonObject>();
 
+    // add error info
+    root["error"] = false;
+    root["reason"] = "";
+
     // create screens array
     JsonArray arr = root.createNestedArray("screens");
     for (std::string screen : get_screens())
@@ -85,10 +89,10 @@ void server_cb_api_settings()
             screen_obj["name"] = screen;
             
             // add screen settings
-            JsonArray settings_obj = screen_obj.createNestedArray("settings");
+            JsonArray settings_arr = screen_obj.createNestedArray("settings");
             for (std::string setting : get_settings(screen.c_str()))
             {
-                JsonObject setting_obj = settings_obj.createNestedObject();
+                JsonObject setting_obj = settings_arr.createNestedObject();
                 setting_obj["name"] = setting;
                 setting_obj["value"] = get_setting(screen.c_str(), setting.c_str(), "");
 
@@ -104,10 +108,6 @@ void server_cb_api_settings()
             }
         }
     }
-
-    // add error info
-    root["error"] = false;
-    root["reason"] = "";
 
     // serialise json
     std::string output = "";
