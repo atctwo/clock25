@@ -36,7 +36,7 @@ void PanelTest::setup(Adafruit_GFX *display)
     logi(LOG_TAG, "Panel Test!!!");
     this->display = display;
 
-    std::string colour = get_setting("Panel Test", "Panel Colour", "00ced1");
+    std::string colour = get_setting(nullptr, "Panel Colour", "00ced1");
     setPanelColour(colour.c_str());
 }
 
