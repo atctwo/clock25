@@ -1,33 +1,35 @@
 {
-  "clock25_settings": {
-    "<ntp>": {
-      "DST Offset": "3600",
-      "Enable automatic NTP": "1",
-      "GMT Offset": "0",
-      "NTP Server": "pool.ntp.org",
-      "NTP Update Frequency": "86400000",
-      "POSIX Timezone": "GMT0BST,M3.5.0/1,M10.5.0"
-    },
-    "<system>": {
-      "Cycle Screens": "0",
-      "Minimum Brightness": "20",
-      "Maximum Brightness": "120"
-    },
-    "<weather>": {
-      "City": "2655984",
-      "Latitude": "<lat>",
-      "Longitude": "<long>",
-      "OpenWeatherMap API Key": "<api key>"
-    },
-    "<wifi>": {
-      "ssid": "<ssid>",
-      "psk": "<password>"
-    },
-    "Digital Clock": {
-      "Rainbow Speed": "14000"
-    },
-    "GIF Player": {
-      "GIF File": "/gifs/amogus64.gif"
+    "clock25_settings": {
+        "<ntp>": {
+            "DST Offset": "3600",
+            "Enable automatic NTP": "1",
+            "GMT Offset": "0",
+            "NTP Server": "pool.ntp.org",
+            "NTP Update Frequency": "86400000",
+            "POSIX Timezone": "GMT0BST,M3.5.0/1,M10.5.0"
+        },
+        "<system>": {
+            "Blank Screen": "0",
+            "Cycle Screens": "0",
+            "Gesture Alt Screen": "Weather Forecast",
+            "Gesture Enabled": "1",
+            "Maximum Brightness": "80",
+            "Minimum Brightness": "16"
+        },
+        "<weather>": {
+            "Latitude": "<latitude>",
+            "Longitude": "<longitude>",
+            "OpenWeatherMap API Key": "<api key>"
+        },
+        "<wifi>": {
+            "ssid": "<ssid>",
+            "psk": "<password>"
+        },
+        "Digital Clock": {
+            "Rainbow Speed": "14000"
+        },
+        "GIF Player": {
+            "GIF File": "/gifs/cat_bobbing_64.gif"
+        }
     }
-  }
 }
