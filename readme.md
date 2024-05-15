@@ -23,7 +23,7 @@ Currently implemented screens are
 [images of the insides]
 
 ### HUB75 RGB LED matrix
-The clock has a big HUB75-style RGB LED matrix panel.  I used on which has 64x64 pixels.
+The clock has a big HUB75-style RGB LED matrix panel.  I used one which has 64x64 pixels.
 
 ### Custom PCB
 [image of the pcb]
