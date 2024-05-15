@@ -43,8 +43,16 @@ void WeatherForecast::get_forecast()
     logi(LOG_TAG, "getting 5 day weather forecast");
     this->status = 1;
 
+    // assemble url string
+    std::string request_url = "https://api.openweathermap.org/data/2.5/forecast?lat=";
+    request_url += get_setting(nullptr, "Latitude", "54.59");
+    request_url += "&lon=";
+    request_url += get_setting(nullptr, "Longitude", "-5.93");
+    request_url += "&appid=";
+    request_url += get_setting(nullptr, "OpenWeatherMap API Key", "");
+
     HTTPClient client;
-    client.begin("https://api.openweathermap.org/data/2.5/forecast?lat=54.59&lon=-5.93&appid=1197feaac9fc0e9ffb090ce31d9ad0cd");
+    client.begin(request_url.c_str());
 
     int response_code = client.GET();
     if (response_code) {
