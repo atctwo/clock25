@@ -1,7 +1,7 @@
 # clock25
 A funky digital clock made out of an ESP32 and an RGB LED matrix panel!  This was created as a one-off personal project, but all the code and design files are included so I hope you find it useful or interesting!
 
-[picture]
+<img src="extras/images/main.png" width=500 alt="Picture of the front of the clock">
 
 ## Features
 - tells the time in big rainbow digits
@@ -20,13 +20,11 @@ Currently implemented screens are
 
 # Implementation
 ## Hardware
-[images of the insides]
-
 ### HUB75 RGB LED matrix
 The clock has a big HUB75-style RGB LED matrix panel.  I used one which has 64x64 pixels.
 
 ### Custom PCB
-[image of the pcb]
+<img src="extras/images/pcb.jpg" width=500 alt="Picture of the PCB">
 
 The project is driven by a custom PCB.  It holds:
 - an ESP32-S3
@@ -42,7 +40,7 @@ The project is driven by a custom PCB.  It holds:
 It's made with KiCad and located in the [pcb](./pcb/) folder.
 
 ### 3D Printed Frame
-[image of the frame]
+<img src="extras/images/back.png" width=500 alt="Picture of the back of the clock">
 
 The project includes a 3D printed frame which holds the matrix and the PCB.  Although the assembled version uses a JLCPCB box superglued onto a minimal frame because I didn't have enough filament to print the whole frame.  Note that the frame is designed to fit the obscure shape of the panel I have, if you want to make a clock25 you might need to modify the OpenSCAD file to fit the dimensions of your panel.
 
