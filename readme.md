@@ -80,10 +80,7 @@ As such, there is a recommended layout for the SD card:
 This layout is provided at [extras/sd_layout](extras/sd_layout/), so if you're setting up the SD card you can just copy the contents of this folder to the root of the SD.
 
 ### Web Interface
-<img src="extras/images/web_main.png" width="24%" alt="Screenshot of the web interface showing each setting category">
-<img src="extras/images/web_screen.png" width="24%" alt="Screenshot of the web interface showing the screen selection dropdown">
-<img src="extras/images/web_ntp.png" width="24%" alt="Screenshot of the web interface showing the NTP settings">
-<img src="extras/images/web_system.png" width="24%" alt="Screenshot of the web interface showing general system settings">
+<img src="extras/images/web_combined.png" alt="Four screenshots of the web interface, showing the list of sections, and the screen, NTP, and system settings">
 
 When connected to a network, the clock provides a web interface for configuring the system and each screen.  It's hosted on port 80.  The clock announces a custom URL using mDNS: [clock25.local](http://clock25.local).
 
